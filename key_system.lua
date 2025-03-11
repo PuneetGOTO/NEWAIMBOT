@@ -52,6 +52,18 @@ local function createKeySystem()
     UICorner2.CornerRadius = UDim.new(0, 6)
     UICorner2.Parent = KeyInput
     
+    -- 创建状态标签
+    local StatusLabel = Instance.new("TextLabel")
+    StatusLabel.Name = "StatusLabel"
+    StatusLabel.Size = UDim2.new(0, 200, 0, 20)
+    StatusLabel.Position = UDim2.new(0.5, -100, 0.85, 0)
+    StatusLabel.BackgroundTransparency = 1
+    StatusLabel.Text = "请输入密钥"
+    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    StatusLabel.TextSize = 12
+    StatusLabel.Font = Enum.Font.SourceSans
+    StatusLabel.Parent = MainFrame
+    
     -- 创建验证按钮
     local ActivateButton = Instance.new("TextButton")
     ActivateButton.Name = "ActivateButton"
@@ -70,18 +82,6 @@ local function createKeySystem()
     local UICorner3 = Instance.new("UICorner")
     UICorner3.CornerRadius = UDim.new(0, 6)
     UICorner3.Parent = ActivateButton
-    
-    -- 创建状态标签
-    local StatusLabel = Instance.new("TextLabel")
-    StatusLabel.Name = "StatusLabel"
-    StatusLabel.Size = UDim2.new(0, 200, 0, 20)
-    StatusLabel.Position = UDim2.new(0.5, -100, 0.85, 0)
-    StatusLabel.BackgroundTransparency = 1
-    StatusLabel.Text = "请输入密钥"
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    StatusLabel.TextSize = 12
-    StatusLabel.Font = Enum.Font.SourceSans
-    StatusLabel.Parent = MainFrame
     
     -- SHA-256加密函数
     local function sha256(str)
@@ -171,12 +171,23 @@ local function createKeySystem()
     
     -- 验证密钥函数
     local function verifyKey(key)
+        print("正在验证密钥:", key)
+        print("密钥长度:", #key)
+        
         local validHashes = {
             ["1f4df8e0c4631599fd2f82d83f6c5e24a5a085b89f3e1a31a0c2cfc4dd86c052"] = true, -- AIMBOT2024
             ["481f6cc0511143ccdd7e2d1b1b94faf0a700a8b49cd13922a70b5ae28acaa8c5"] = true, -- VIP888
             ["89e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8"] = true  -- PRO999
         }
-        return validHashes[sha256(key)] or false
+        
+        local hashedKey = sha256(key)
+        print("密钥哈希值:", hashedKey)
+        print("有效的哈希值:")
+        for hash, _ in pairs(validHashes) do
+            print(hash)
+        end
+        
+        return validHashes[hashedKey] or false
     end
     
     -- 从GitHub加载脚本
@@ -200,8 +211,11 @@ local function createKeySystem()
     local attempts = 0
     local verified = false
     
+    print("正在绑定按钮点击事件")
     ActivateButton.MouseButton1Click:Connect(function()
+        print("按钮被点击")
         if attempts >= 3 then
+            print("验证次数超限")
             StatusLabel.Text = "验证次数超限！"
             StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
             wait(2)
@@ -210,10 +224,10 @@ local function createKeySystem()
         end
 
         local key = KeyInput.Text
-        print("尝试验证密钥:", key) -- 添加调试输出
+        print("输入的密钥:", key)
         
         if verifyKey(key) then
-            print("密钥验证成功") -- 添加调试输出
+            print("密钥验证成功")
             StatusLabel.Text = "验证成功！正在加载脚本..."
             StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
             verified = true
@@ -221,8 +235,9 @@ local function createKeySystem()
             ScreenGui:Destroy()
             loadScriptFromGitHub()
         else
-            print("密钥验证失败") -- 添加调试输出
+            print("密钥验证失败")
             attempts = attempts + 1
+            print("当前尝试次数:", attempts)
             StatusLabel.Text = "密钥错误！剩余尝试次数: " .. (3 - attempts)
             StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
             
@@ -231,6 +246,17 @@ local function createKeySystem()
                 game.Players.LocalPlayer:Kick("验证失败")
             end
         end
+    end)
+    
+    -- 添加按钮点击效果
+    ActivateButton.MouseButton1Down:Connect(function()
+        print("按钮按下")
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+    end)
+    
+    ActivateButton.MouseButton1Up:Connect(function()
+        print("按钮释放")
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
     end)
     
     -- 添加拖动功能
