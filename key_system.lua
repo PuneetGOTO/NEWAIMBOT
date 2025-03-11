@@ -1,5 +1,5 @@
 -- 密钥验证系统
-local createKeySystem = function()
+local function createKeySystem()
     local ScreenGui = Instance.new("ScreenGui")
     local MainFrame = Instance.new("Frame")
     local Title = Instance.new("TextLabel")
@@ -82,61 +82,71 @@ local createKeySystem = function()
     
     -- SHA-256加密函数
     local function sha256(str)
-        local function rightRotate(n, k)
-            return bit32.rshift(n, k) + bit32.lshift(n, (32 - k))
+        local function rrotate(n, b)
+            local s = n >> b
+            local e = n << (32 - b)
+            return s + e
         end
+        
+        local function preprocess(str)
+            local length = #str * 8
+            local arr = {}
+            for i = 1, #str do
+                arr[i] = string.byte(str, i)
+            end
+            arr[#arr + 1] = 0x80
+            while (#arr + 8) % 64 ~= 0 do
+                arr[#arr + 1] = 0
+            end
+            for i = 1, 8 do
+                arr[#arr + 1] = (length >> ((8 - i) * 8)) & 0xFF
+            end
+            return arr
+        end
+        
+        local k = {
+            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+            0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+            0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+            0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+            0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+            0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+            0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+            0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+            0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+        }
         
         local h = {
             0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
             0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
         }
         
-        local k = {
-            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
-            0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5
-        }
-        
-        local function preprocess(str)
-            local length = #str * 8
-            local result = {}
-            for i = 1, #str do
-                result[#result + 1] = string.byte(str, i)
-            end
-            result[#result + 1] = 0x80
-            while (#result + 8) % 64 ~= 0 do
-                result[#result + 1] = 0
-            end
-            for i = 1, 8 do
-                result[#result + 1] = bit32.extract(length, (8 - i) * 8, 8)
-            end
-            return result
-        end
-        
-        local message = preprocess(str)
+        local msg = preprocess(str)
         local chunks = {}
-        for i = 1, #message, 64 do
+        
+        for i = 1, #msg, 64 do
             local chunk = {}
-            for j = 0, 15 do
-                chunk[j + 1] = bit32.lshift(message[i + j * 4], 24) +
-                              bit32.lshift(message[i + j * 4 + 1], 16) +
-                              bit32.lshift(message[i + j * 4 + 2], 8) +
-                              message[i + j * 4 + 3]
+            for j = 1, 16 do
+                local index = i + (j-1) * 4
+                chunk[j] = (msg[index] << 24) + (msg[index + 1] << 16) + 
+                          (msg[index + 2] << 8) + msg[index + 3]
             end
             chunks[#chunks + 1] = chunk
         end
         
         for _, chunk in ipairs(chunks) do
             local w = {}
-            for i = 1, 16 do
-                w[i] = chunk[i]
-            end
+            for i = 1, 16 do w[i] = chunk[i] end
             for i = 17, 64 do
-                local s0 = bit32.bxor(rightRotate(w[i-15], 7),
-                                    rightRotate(w[i-15], 18),
-                                    bit32.rshift(w[i-15], 3))
-                local s1 = bit32.bxor(rightRotate(w[i-2], 17),
-                                    rightRotate(w[i-2], 19),
-                                    bit32.rshift(w[i-2], 10))
+                local s0 = rrotate(w[i-15], 7) ~ rrotate(w[i-15], 18) ~ (w[i-15] >> 3)
+                local s1 = rrotate(w[i-2], 17) ~ rrotate(w[i-2], 19) ~ (w[i-2] >> 10)
                 w[i] = w[i-16] + s0 + w[i-7] + s1
             end
             
@@ -144,18 +154,11 @@ local createKeySystem = function()
             local e, f, g, h_ = h[5], h[6], h[7], h[8]
             
             for i = 1, 64 do
-                local S1 = bit32.bxor(rightRotate(e, 6),
-                                    rightRotate(e, 11),
-                                    rightRotate(e, 25))
-                local ch = bit32.bxor(bit32.band(e, f),
-                                    bit32.band(bit32.bnot(e), g))
+                local S1 = rrotate(e, 6) ~ rrotate(e, 11) ~ rrotate(e, 25)
+                local ch = (e & f) ~ (~e & g)
                 local temp1 = h_ + S1 + ch + k[i] + w[i]
-                local S0 = bit32.bxor(rightRotate(a, 2),
-                                    rightRotate(a, 13),
-                                    rightRotate(a, 22))
-                local maj = bit32.bxor(bit32.band(a, b),
-                                     bit32.band(a, c),
-                                     bit32.band(b, c))
+                local S0 = rrotate(a, 2) ~ rrotate(a, 13) ~ rrotate(a, 22)
+                local maj = (a & b) ~ (a & c) ~ (b & c)
                 local temp2 = S0 + maj
                 
                 h_ = g
@@ -168,14 +171,14 @@ local createKeySystem = function()
                 a = temp1 + temp2
             end
             
-            h[1] = bit32.band(h[1] + a, 0xffffffff)
-            h[2] = bit32.band(h[2] + b, 0xffffffff)
-            h[3] = bit32.band(h[3] + c, 0xffffffff)
-            h[4] = bit32.band(h[4] + d, 0xffffffff)
-            h[5] = bit32.band(h[5] + e, 0xffffffff)
-            h[6] = bit32.band(h[6] + f, 0xffffffff)
-            h[7] = bit32.band(h[7] + g, 0xffffffff)
-            h[8] = bit32.band(h[8] + h_, 0xffffffff)
+            h[1] = (h[1] + a) & 0xffffffff
+            h[2] = (h[2] + b) & 0xffffffff
+            h[3] = (h[3] + c) & 0xffffffff
+            h[4] = (h[4] + d) & 0xffffffff
+            h[5] = (h[5] + e) & 0xffffffff
+            h[6] = (h[6] + f) & 0xffffffff
+            h[7] = (h[7] + g) & 0xffffffff
+            h[8] = (h[8] + h_) & 0xffffffff
         end
         
         local result = ""
@@ -188,9 +191,9 @@ local createKeySystem = function()
     -- 验证密钥函数
     local function verifyKey(key)
         local validHashes = {
-            ["8a9bcf1e8d2f4c5b3a7d6e9f0c1b2a5d"] = true, -- AIMBOT2024
-            ["3f7d9e2c1b5a4f8d6e0c2b7a9f1e3d5c"] = true, -- VIP888
-            ["5c2b9f4e7d1a8c3b6f0e2d9a7c4b1f3e"] = true  -- PRO999
+            ["8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"] = true, -- 123456
+            ["481f6cc0511143ccdd7e2d1b1b94faf0a700a8b49cd13922a70b5ae28acaa8c5"] = true, -- VIP888
+            ["89e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8"] = true  -- PRO999
         }
         return validHashes[sha256(key)] or false
     end
@@ -278,6 +281,13 @@ local createKeySystem = function()
             update(input)
         end
     end)
+    
+    -- 等待验证结果
+    repeat wait() until verified or attempts >= 3
+    return verified
 end
 
-createKeySystem()
+-- 运行验证系统
+if not createKeySystem() then
+    return
+end
