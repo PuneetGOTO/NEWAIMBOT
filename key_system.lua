@@ -83,9 +83,9 @@ local function createKeySystem()
     -- SHA-256加密函数
     local function sha256(str)
         local function rrotate(n, b)
-            local s = n >> b
-            local r = n << (32 - b)
-            return (s + r) & 0xffffffff
+            local s = bit32.rshift(n, b)
+            local r = bit32.lshift(n, (32 - b))
+            return bit32.band((s + r), 0xffffffff)
         end
         
         local function preprocess(str)
@@ -99,7 +99,7 @@ local function createKeySystem()
                 arr[#arr + 1] = 0
             end
             for i = 1, 8 do
-                arr[#arr + 1] = ((length >> ((8 - i) * 8)) & 0xFF)
+                arr[#arr + 1] = bit32.band(bit32.rshift(length, ((8 - i) * 8)), 0xFF)
             end
             return arr
         end
@@ -112,44 +112,44 @@ local function createKeySystem()
             
             local W = {}
             for j = 1, 16 do
-                W[j] = (msg[i + (j-1)*4] << 24) + (msg[i + (j-1)*4 + 1] << 16) +
-                       (msg[i + (j-1)*4 + 2] << 8) + msg[i + (j-1)*4 + 3]
+                W[j] = bit32.lshift(msg[i + (j-1)*4], 24) + bit32.lshift(msg[i + (j-1)*4 + 1], 16) +
+                       bit32.lshift(msg[i + (j-1)*4 + 2], 8) + msg[i + (j-1)*4 + 3]
             end
             
             for j = 17, 64 do
-                local s0 = rrotate(W[j-15], 7) ~ rrotate(W[j-15], 18) ~ (W[j-15] >> 3)
-                local s1 = rrotate(W[j-2], 17) ~ rrotate(W[j-2], 19) ~ (W[j-2] >> 10)
-                W[j] = (W[j-16] + s0 + W[j-7] + s1) & 0xffffffff
+                local s0 = bit32.bxor(rrotate(W[j-15], 7), rrotate(W[j-15], 18), bit32.rshift(W[j-15], 3))
+                local s1 = bit32.bxor(rrotate(W[j-2], 17), rrotate(W[j-2], 19), bit32.rshift(W[j-2], 10))
+                W[j] = bit32.band((W[j-16] + s0 + W[j-7] + s1), 0xffffffff)
             end
             
             local a, b, c, d, e, f, g, h = H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8]
             
             for j = 1, 64 do
-                local S1 = rrotate(e, 6) ~ rrotate(e, 11) ~ rrotate(e, 25)
-                local ch = (e & f) ~ (~e & g)
+                local S1 = bit32.bxor(rrotate(e, 6), rrotate(e, 11), rrotate(e, 25))
+                local ch = bit32.bxor(bit32.band(e, f), bit32.band(bit32.bnot(e), g))
                 local temp1 = h + S1 + ch + K[j] + W[j]
-                local S0 = rrotate(a, 2) ~ rrotate(a, 13) ~ rrotate(a, 22)
-                local maj = (a & b) ~ (a & c) ~ (b & c)
+                local S0 = bit32.bxor(rrotate(a, 2), rrotate(a, 13), rrotate(a, 22))
+                local maj = bit32.bxor(bit32.band(a, b), bit32.band(a, c), bit32.band(b, c))
                 local temp2 = S0 + maj
                 
                 h = g
                 g = f
                 f = e
-                e = (d + temp1) & 0xffffffff
+                e = bit32.band((d + temp1), 0xffffffff)
                 d = c
                 c = b
                 b = a
-                a = (temp1 + temp2) & 0xffffffff
+                a = bit32.band((temp1 + temp2), 0xffffffff)
             end
             
-            H[1] = (H[1] + a) & 0xffffffff
-            H[2] = (H[2] + b) & 0xffffffff
-            H[3] = (H[3] + c) & 0xffffffff
-            H[4] = (H[4] + d) & 0xffffffff
-            H[5] = (H[5] + e) & 0xffffffff
-            H[6] = (H[6] + f) & 0xffffffff
-            H[7] = (H[7] + g) & 0xffffffff
-            H[8] = (H[8] + h) & 0xffffffff
+            H[1] = bit32.band((H[1] + a), 0xffffffff)
+            H[2] = bit32.band((H[2] + b), 0xffffffff)
+            H[3] = bit32.band((H[3] + c), 0xffffffff)
+            H[4] = bit32.band((H[4] + d), 0xffffffff)
+            H[5] = bit32.band((H[5] + e), 0xffffffff)
+            H[6] = bit32.band((H[6] + f), 0xffffffff)
+            H[7] = bit32.band((H[7] + g), 0xffffffff)
+            H[8] = bit32.band((H[8] + h), 0xffffffff)
         end
         
         local H = {
