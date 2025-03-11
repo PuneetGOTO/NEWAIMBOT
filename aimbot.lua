@@ -1,18 +1,4 @@
-{
-    "ThirdPersonSensitivity": 3,
-    "ReloadOnTeleport": true,
-    "Enabled": true,
-    "Sensitivity": 0,
-    "SendNotifications": true,
-    "WallCheck": false,
-    "TriggerKey": "MouseButton2",
-    "SaveSettings": true,
-    "AliveCheck": true,
-    "ThirdPerson": false,
-    "LockPart": "Head",
-    "TeamCheck": false,
-    "Toggle": false
-  }
+
   --// Cache
 
 local select = select
