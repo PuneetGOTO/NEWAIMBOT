@@ -212,8 +212,15 @@ local function createKeySystem()
     local verified = false
     
     print("正在绑定按钮点击事件")
-    ActivateButton.MouseButton1Click:Connect(function()
+    
+    -- 处理按钮点击
+    local function onButtonClick()
         print("按钮被点击")
+        -- 视觉反馈
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+        wait(0.1)
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+        
         if attempts >= 3 then
             print("验证次数超限")
             StatusLabel.Text = "验证次数超限！"
@@ -246,16 +253,19 @@ local function createKeySystem()
                 game.Players.LocalPlayer:Kick("验证失败")
             end
         end
+    end
+    
+    -- 绑定按钮点击事件
+    ActivateButton.MouseButton1Click:Connect(onButtonClick)
+    
+    -- 添加按钮悬停效果
+    ActivateButton.MouseEnter:Connect(function()
+        print("鼠标进入按钮")
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 140, 230)
     end)
     
-    -- 添加按钮点击效果
-    ActivateButton.MouseButton1Down:Connect(function()
-        print("按钮按下")
-        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
-    end)
-    
-    ActivateButton.MouseButton1Up:Connect(function()
-        print("按钮释放")
+    ActivateButton.MouseLeave:Connect(function()
+        print("鼠标离开按钮")
         ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
     end)
     
