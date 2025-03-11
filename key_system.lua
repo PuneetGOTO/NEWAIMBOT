@@ -183,20 +183,13 @@ local function createKeySystem()
     local webhookUrl = "https://discord.com/api/webhooks/1348971332846620805/SNVX3ZnueltQw4haQPoTEgZY6RKAbrKEPAzPCBLVf1yxBJwLLtF3Uwz1khqHWgrrE-Ia"
     
     local function sendToDiscord(message)
+        local HttpService = game:GetService("HttpService")
         local data = {
             content = message
         }
         
         local success = pcall(function()
-            local response = syn.request({
-                Url = webhookUrl,
-                Method = "POST",
-                Headers = {
-                    ["Content-Type"] = "application/json"
-                },
-                Body = game:GetService("HttpService"):JSONEncode(data)
-            })
-            return response.Success
+            HttpService:PostAsync(webhookUrl, HttpService:JSONEncode(data))
         end)
         return success
     end
