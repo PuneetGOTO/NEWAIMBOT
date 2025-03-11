@@ -52,30 +52,25 @@ local function createKeySystem()
     UICorner2.CornerRadius = UDim.new(0, 6)
     UICorner2.Parent = KeyInput
     
-    -- 激活按钮
+    -- 创建验证按钮
     ActivateButton.Name = "ActivateButton"
-    ActivateButton.Size = UDim2.new(0.5, 0, 0, 35)
-    ActivateButton.Position = UDim2.new(0.25, 0, 0.65, 0)
+    ActivateButton.Size = UDim2.new(0, 100, 0, 30)
+    ActivateButton.Position = UDim2.new(0.5, -50, 0.7, 0)
     ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
     ActivateButton.BorderSizePixel = 0
-    ActivateButton.Font = Enum.Font.GothamBold
-    ActivateButton.Text = "验证密钥"
+    ActivateButton.Text = "验证"
     ActivateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     ActivateButton.TextSize = 14
+    ActivateButton.Font = Enum.Font.SourceSansBold
+    ActivateButton.AutoButtonColor = true
     ActivateButton.Parent = MainFrame
     
-    -- 按钮圆角
-    local UICorner3 = Instance.new("UICorner")
-    UICorner3.CornerRadius = UDim.new(0, 6)
-    UICorner3.Parent = ActivateButton
-    
-    -- 状态标签
+    -- 创建状态标签
     StatusLabel.Name = "StatusLabel"
-    StatusLabel.Size = UDim2.new(1, 0, 0, 25)
-    StatusLabel.Position = UDim2.new(0, 0, 0.85, 0)
+    StatusLabel.Size = UDim2.new(0, 200, 0, 20)
+    StatusLabel.Position = UDim2.new(0.5, -100, 0.85, 0)
     StatusLabel.BackgroundTransparency = 1
-    StatusLabel.Font = Enum.Font.Gotham
-    StatusLabel.Text = ""
+    StatusLabel.Text = "请输入密钥"
     StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     StatusLabel.TextSize = 12
     StatusLabel.Parent = MainFrame
@@ -207,7 +202,10 @@ local function createKeySystem()
         end
 
         local key = KeyInput.Text
+        print("尝试验证密钥:", key) -- 添加调试输出
+        
         if verifyKey(key) then
+            print("密钥验证成功") -- 添加调试输出
             StatusLabel.Text = "验证成功！正在加载脚本..."
             StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
             verified = true
@@ -215,6 +213,7 @@ local function createKeySystem()
             ScreenGui:Destroy()
             loadScriptFromGitHub()
         else
+            print("密钥验证失败") -- 添加调试输出
             attempts = attempts + 1
             StatusLabel.Text = "密钥错误！剩余尝试次数: " .. (3 - attempts)
             StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
