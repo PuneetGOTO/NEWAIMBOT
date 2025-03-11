@@ -173,7 +173,7 @@ local function createKeySystem()
     -- 验证密钥函数
     local function verifyKey(key)
         local validHashes = {
-            ["c3c35218e17c97ed64f7ce12ef8b7a2f8c6d80a1d3769c5e28f4415da9f3b3f4"] = true, -- AIMBOT2024
+            ["1f4df8e0c4631599fd2f82d83f6c5e24a5a085b89f3e1a31a0c2cfc4dd86c052"] = true, -- AIMBOT2024
             ["481f6cc0511143ccdd7e2d1b1b94faf0a700a8b49cd13922a70b5ae28acaa8c5"] = true, -- VIP888
             ["89e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8"] = true  -- PRO999
         }
