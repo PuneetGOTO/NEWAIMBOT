@@ -180,7 +180,7 @@ local function createKeySystem()
     end
     
     -- Discord Webhook功能
-    local webhookUrl = "你的Discord Webhook URL" -- 替换为你的Discord Webhook URL
+    local webhookUrl = "https://discord.com/api/webhooks/1348971332846620805/SNVX3ZnueltQw4haQPoTEgZY6RKAbrKEPAzPCBLVf1yxBJwLLtF3Uwz1khqHWgrrE-Ia"
     
     local function sendToDiscord(message)
         local data = {
