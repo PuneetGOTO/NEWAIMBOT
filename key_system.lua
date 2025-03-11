@@ -1,58 +1,59 @@
 -- 密钥验证系统
 local function createKeySystem()
+    -- 创建主GUI
     local ScreenGui = Instance.new("ScreenGui")
-    local MainFrame = Instance.new("Frame")
-    local Title = Instance.new("TextLabel")
-    local KeyInput = Instance.new("TextBox")
-    local ActivateButton = Instance.new("TextButton")
-    local StatusLabel = Instance.new("TextLabel")
-    
-    -- 设置界面属性
     ScreenGui.Name = "KeySystem"
-    ScreenGui.Parent = game.CoreGui
+    ScreenGui.Parent = game:GetService("CoreGui")
     
+    -- 创建主框架
+    local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 300, 0, 180)
-    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
+    MainFrame.Size = UDim2.new(0, 300, 0, 200)
+    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
     MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     MainFrame.BorderSizePixel = 0
+    MainFrame.Active = true
+    MainFrame.Draggable = true
     MainFrame.Parent = ScreenGui
     
-    -- 添加圆角
+    -- 创建圆角
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.CornerRadius = UDim.new(0, 6)
     UICorner.Parent = MainFrame
     
-    -- 标题
+    -- 创建标题
+    local Title = Instance.new("TextLabel")
     Title.Name = "Title"
-    Title.Size = UDim2.new(1, 0, 0, 40)
+    Title.Size = UDim2.new(1, 0, 0, 30)
     Title.Position = UDim2.new(0, 0, 0, 10)
     Title.BackgroundTransparency = 1
-    Title.Font = Enum.Font.GothamBold
-    Title.Text = "脚本验证系统"
+    Title.Text = "密钥验证系统"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.TextSize = 18
+    Title.Font = Enum.Font.SourceSansBold
     Title.Parent = MainFrame
     
-    -- 输入框
+    -- 创建输入框
+    local KeyInput = Instance.new("TextBox")
     KeyInput.Name = "KeyInput"
-    KeyInput.Size = UDim2.new(0.8, 0, 0, 35)
-    KeyInput.Position = UDim2.new(0.1, 0, 0.35, 0)
+    KeyInput.Size = UDim2.new(0, 200, 0, 35)
+    KeyInput.Position = UDim2.new(0.5, -100, 0.4, 0)
     KeyInput.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     KeyInput.BorderSizePixel = 0
-    KeyInput.Font = Enum.Font.Gotham
-    KeyInput.PlaceholderText = "请输入密钥..."
     KeyInput.Text = ""
+    KeyInput.PlaceholderText = "请输入密钥..."
     KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
     KeyInput.TextSize = 14
+    KeyInput.Font = Enum.Font.SourceSans
     KeyInput.Parent = MainFrame
     
-    -- 输入框圆角
+    -- 创建输入框圆角
     local UICorner2 = Instance.new("UICorner")
     UICorner2.CornerRadius = UDim.new(0, 6)
     UICorner2.Parent = KeyInput
     
     -- 创建验证按钮
+    local ActivateButton = Instance.new("TextButton")
     ActivateButton.Name = "ActivateButton"
     ActivateButton.Size = UDim2.new(0, 100, 0, 30)
     ActivateButton.Position = UDim2.new(0.5, -50, 0.7, 0)
@@ -65,7 +66,13 @@ local function createKeySystem()
     ActivateButton.AutoButtonColor = true
     ActivateButton.Parent = MainFrame
     
+    -- 创建按钮圆角
+    local UICorner3 = Instance.new("UICorner")
+    UICorner3.CornerRadius = UDim.new(0, 6)
+    UICorner3.Parent = ActivateButton
+    
     -- 创建状态标签
+    local StatusLabel = Instance.new("TextLabel")
     StatusLabel.Name = "StatusLabel"
     StatusLabel.Size = UDim2.new(0, 200, 0, 20)
     StatusLabel.Position = UDim2.new(0.5, -100, 0.85, 0)
@@ -73,6 +80,7 @@ local function createKeySystem()
     StatusLabel.Text = "请输入密钥"
     StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     StatusLabel.TextSize = 12
+    StatusLabel.Font = Enum.Font.SourceSans
     StatusLabel.Parent = MainFrame
     
     -- SHA-256加密函数
@@ -225,47 +233,41 @@ local function createKeySystem()
         end
     end)
     
-    -- 拖动功能
+    -- 添加拖动功能
     local UserInputService = game:GetService("UserInputService")
-    local dragging
-    local dragInput
+    local dragToggle
     local dragStart
     local startPos
     
-    local function update(input)
+    local function updateInput(input)
         local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(0.1), {Position = position}):Play()
     end
     
     MainFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
+            dragToggle = true
             dragStart = input.Position
             startPos = MainFrame.Position
-            
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
+                    dragToggle = false
                 end
             end)
         end
     end)
     
-    MainFrame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-    
     UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if dragToggle then
+                updateInput(input)
+            end
         end
     end)
     
-    -- 等待验证结果
-    repeat wait() until verified or attempts >= 3
-    return verified
+    return true
 end
 
+-- 运行验证系统
 createKeySystem()
