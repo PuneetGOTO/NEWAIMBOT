@@ -137,99 +137,71 @@ function AimbotGui.Show()
     ScreenGui.Parent = game:GetService("CoreGui")
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ScreenGui.DisplayOrder = 999999
+    ScreenGui.ResetOnSpawn = false  -- 防止重生时GUI消失
     
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
     MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     MainFrame.Size = UDim2.new(0, 280, 0, 380)
     MainFrame.Position = UDim2.new(0.5, -140, 0.5, -190)
+    MainFrame.Active = true         -- 确保可以拖动
+    MainFrame.Draggable = true      -- 启用拖动
+    MainFrame.Visible = true        -- 确保可见
     
-    -- 添加阴影效果
-    local Shadow = Instance.new("ImageLabel")
-    Shadow.Name = "Shadow"
-    Shadow.Parent = MainFrame
-    Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    Shadow.BackgroundTransparency = 1
-    Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    Shadow.Size = UDim2.new(1.1, 0, 1.1, 0)
-    Shadow.ZIndex = -1
-    Shadow.Image = "rbxassetid://5554236805"
-    Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    Shadow.ImageTransparency = 0.4
-    Shadow.ScaleType = Enum.ScaleType.Slice
-    Shadow.SliceCenter = Rect.new(23, 23, 277, 277)
-
-    -- 添加渐变背景
-    local Gradient = Instance.new("UIGradient")
-    Gradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 25)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
-    })
-    Gradient.Rotation = 45
-    Gradient.Parent = MainFrame
-
-    -- 添加标题装饰线
-    local TitleLine = Instance.new("Frame")
-    TitleLine.Name = "TitleLine"
-    TitleLine.Parent = MainFrame
-    TitleLine.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
-    TitleLine.Position = UDim2.new(0.1, 0, 0.12, 0)
-    TitleLine.Size = UDim2.new(0.8, 0, 0, 2)
-    TitleLine.BorderSizePixel = 0
+    -- 添加圆角
     local function addCorner(element)
         local corner = Instance.new("UICorner")
         corner.CornerRadius = UDim.new(0, 6)
         corner.Parent = element
     end
-    addCorner(TitleLine)
-
+    
+    addCorner(MainFrame)
+    
+    -- 设置标题
     Title.Name = "Title"
     Title.Parent = MainFrame
     Title.BackgroundTransparency = 1
-    Title.Position = UDim2.new(0.5, -70, 0.02, 0)
-    Title.Size = UDim2.new(0, 140, 0, 40)
+    Title.Position = UDim2.new(0, 20, 0, 10)  -- 调整位置
+    Title.Size = UDim2.new(0, 240, 0, 40)
     Title.Font = Enum.Font.GothamBold
     Title.Text = "PUPUHUB"
-    Title.TextSize = 32.000
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 32.000
+    Title.Visible = true           -- 确保可见
     
-    -- 添加拖动功能
-    local UserInputService = game:GetService("UserInputService")
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
-    
-    local function updateDrag(input)
-        local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    -- 设置按钮基础属性
+    local function setupButton(button, position, text)
+        button.Position = position
+        button.Size = UDim2.new(0, 200, 0, 30)
+        button.Font = Enum.Font.GothamBold
+        button.Text = text
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.TextSize = 14.000
+        button.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+        button.BorderSizePixel = 0
+        button.Visible = true      -- 确保可见
+        addCorner(button)
     end
     
-    Title.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = MainFrame.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
+    -- 设置所有按钮
+    setupButton(ToggleButton, UDim2.new(0.5, -100, 0, 70), "ENABLED")
+    setupButton(TeamCheckButton, UDim2.new(0.5, -100, 0, 110), "TEAM CHECK: OFF")
+    setupButton(WallCheckButton, UDim2.new(0.5, -100, 0, 150), "WALL CHECK: OFF")
+    setupButton(NoCollisionButton, UDim2.new(0.5, -100, 0, 190), "NO COLLISION: OFF")
+    setupButton(AntiAFKButton, UDim2.new(0.5, -100, 0, 230), "ANTI AFK: OFF")
+    setupButton(TeleportButton, UDim2.new(0.5, -100, 0, 270), "TELEPORT: OFF")
     
-    Title.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            updateDrag(input)
-        end
-    end)
+    -- 设置社交信息
+    SocialInfo.Name = "SocialInfo"
+    SocialInfo.Parent = MainFrame
+    SocialInfo.BackgroundTransparency = 1
+    SocialInfo.Position = UDim2.new(0, 10, 1, -40)
+    SocialInfo.Size = UDim2.new(1, -20, 0, 30)
+    SocialInfo.Font = Enum.Font.GothamBold
+    SocialInfo.Text = "DC @puneet | discord.gg/eyrMV7MKck"
+    SocialInfo.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SocialInfo.TextSize = 12.000
+    SocialInfo.Visible = true     -- 确保可见
     
     -- 统一按钮风格
     local function styleButton(button)
@@ -313,73 +285,238 @@ function AimbotGui.Show()
     styleButton(TeleportButton)
     TeleportButton.Text = "TELEPORT: OFF"
     
+    -- 设置FOV滑块
     FOVSlider.Name = "FOVSlider"
     FOVSlider.Parent = MainFrame
     FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    FOVSlider.Position = UDim2.new(0.1, 0, startY + 0.7, 0)
-    FOVSlider.Size = UDim2.new(0.8, 0, 0, 5)
+    FOVSlider.Position = UDim2.new(0.5, -100, 0, 310)
+    FOVSlider.Size = UDim2.new(0, 200, 0, 5)
     FOVSlider.BorderSizePixel = 0
-    
-    -- 添加滑块轨道渐变
-    local sliderGradient = Instance.new("UIGradient")
-    sliderGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 50)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 35))
-    })
-    sliderGradient.Rotation = 90
-    sliderGradient.Parent = FOVSlider
+    addCorner(FOVSlider)
     
     SliderButton.Name = "SliderButton"
     SliderButton.Parent = FOVSlider
-    SliderButton.BackgroundColor3 = Color3.fromRGB(0, 180, 30)
-    SliderButton.Position = UDim2.new(0.5, -5, -1, 0)
+    SliderButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    SliderButton.Position = UDim2.new(Environment.FOVSettings.Amount / 180, -5, -1, 0)
     SliderButton.Size = UDim2.new(0, 10, 0, 20)
     SliderButton.Text = ""
     SliderButton.BorderSizePixel = 0
+    addCorner(SliderButton)
     
     FOVValue.Name = "FOVValue"
-    FOVValue.Parent = FOVSlider
+    FOVValue.Parent = MainFrame
     FOVValue.BackgroundTransparency = 1
-    FOVValue.Position = UDim2.new(0, 0, -1.2, 0)
-    FOVValue.Size = UDim2.new(1, 0, 0, 20)
+    FOVValue.Position = UDim2.new(0.5, -100, 0, 290)
+    FOVValue.Size = UDim2.new(0, 200, 0, 20)
     FOVValue.Font = Enum.Font.GothamBold
-    FOVValue.Text = "FOV: 90"
+    FOVValue.Text = "FOV: " .. Environment.FOVSettings.Amount
     FOVValue.TextColor3 = Color3.fromRGB(255, 255, 255)
     FOVValue.TextSize = 14.000
+    FOVValue.Visible = true
     
+    -- 设置灵敏度滑块
     SensitivitySlider.Name = "SensitivitySlider"
     SensitivitySlider.Parent = MainFrame
     SensitivitySlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    SensitivitySlider.Position = UDim2.new(0.1, 0, startY + 0.8, 0)
-    SensitivitySlider.Size = UDim2.new(0.8, 0, 0, 5)
+    SensitivitySlider.Position = UDim2.new(0.5, -100, 0, 350)
+    SensitivitySlider.Size = UDim2.new(0, 200, 0, 5)
     SensitivitySlider.BorderSizePixel = 0
-    
-    -- 添加滑块轨道渐变
-    local sensSliderGradient = Instance.new("UIGradient")
-    sensSliderGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 50)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 35))
-    })
-    sensSliderGradient.Rotation = 90
-    sensSliderGradient.Parent = SensitivitySlider
+    addCorner(SensitivitySlider)
     
     SensSliderButton.Name = "SensSliderButton"
     SensSliderButton.Parent = SensitivitySlider
-    SensSliderButton.BackgroundColor3 = Color3.fromRGB(0, 180, 30)
-    SensSliderButton.Position = UDim2.new(0, -5, -1, 0)
+    SensSliderButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    SensSliderButton.Position = UDim2.new(Environment.Settings.Sensitivity, -5, -1, 0)
     SensSliderButton.Size = UDim2.new(0, 10, 0, 20)
     SensSliderButton.Text = ""
     SensSliderButton.BorderSizePixel = 0
+    addCorner(SensSliderButton)
     
     SensValue.Name = "SensValue"
-    SensValue.Parent = SensitivitySlider
+    SensValue.Parent = MainFrame
     SensValue.BackgroundTransparency = 1
-    SensValue.Position = UDim2.new(0, 0, -1.2, 0)
-    SensValue.Size = UDim2.new(1, 0, 0, 20)
+    SensValue.Position = UDim2.new(0.5, -100, 0, 330)
+    SensValue.Size = UDim2.new(0, 200, 0, 20)
     SensValue.Font = Enum.Font.GothamBold
-    SensValue.Text = "SENSITIVITY: 0"
+    SensValue.Text = "SENSITIVITY: " .. Environment.Settings.Sensitivity
     SensValue.TextColor3 = Color3.fromRGB(255, 255, 255)
     SensValue.TextSize = 14.000
+    SensValue.Visible = true
+    
+    -- 滑块拖动功能
+    local function updateFOV(input)
+        local sliderPosition = math.clamp((input.Position.X - FOVSlider.AbsolutePosition.X) / FOVSlider.AbsoluteSize.X, 0, 1)
+        local newFOV = math.floor(sliderPosition * 180)
+        Environment.FOVSettings.Amount = newFOV
+        FOVValue.Text = "FOV: " .. newFOV
+        SliderButton.Position = UDim2.new(sliderPosition, -5, -1, 0)
+    end
+    
+    local function updateSensitivity(input)
+        local sliderPosition = math.clamp((input.Position.X - SensitivitySlider.AbsolutePosition.X) / SensitivitySlider.AbsoluteSize.X, 0, 1)
+        local newSens = math.floor(sliderPosition * 10) / 10
+        Environment.Settings.Sensitivity = newSens
+        SensValue.Text = "SENSITIVITY: " .. newSens
+        SensSliderButton.Position = UDim2.new(sliderPosition, -5, -1, 0)
+    end
+    
+    -- FOV滑块事件
+    local draggingFOV = false
+    SliderButton.MouseButton1Down:Connect(function()
+        draggingFOV = true
+    end)
+    
+    -- 灵敏度滑块事件
+    local draggingSens = false
+    SensSliderButton.MouseButton1Down:Connect(function()
+        draggingSens = true
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            draggingFOV = false
+            draggingSens = false
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            if draggingFOV then
+                updateFOV(input)
+            elseif draggingSens then
+                updateSensitivity(input)
+            end
+        end
+    end)
+    
+    -- 统一按钮状态颜色
+    local function updateButtonState(button, enabled)
+        local targetColor = enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        local targetText = button.Text:gsub("ON", "OFF"):gsub("OFF", "ON")
+        
+        game:GetService("TweenService"):Create(button, TweenInfo.new(0.3), {
+            BackgroundColor3 = targetColor
+        }):Play()
+        
+        if enabled then
+            button.Text = button.Text:gsub("OFF", "ON")
+        else
+            button.Text = button.Text:gsub("ON", "OFF")
+        end
+    end
+    
+    -- 按钮功能
+    ToggleButton.MouseButton1Down:Connect(function()
+        Environment.Settings.Enabled = not Environment.Settings.Enabled
+        updateButtonState(ToggleButton, Environment.Settings.Enabled)
+    end)
+    
+    TeamCheckButton.MouseButton1Down:Connect(function()
+        Environment.Settings.TeamCheck = not Environment.Settings.TeamCheck
+        updateButtonState(TeamCheckButton, Environment.Settings.TeamCheck)
+    end)
+    
+    WallCheckButton.MouseButton1Down:Connect(function()
+        Environment.Settings.WallCheck = not Environment.Settings.WallCheck
+        updateButtonState(WallCheckButton, Environment.Settings.WallCheck)
+    end)
+    
+    -- 添加无碰撞按钮功能
+    NoCollisionButton.MouseButton1Down:Connect(function()
+        Environment.Settings.NoCollision = not Environment.Settings.NoCollision
+        updateButtonState(NoCollisionButton, Environment.Settings.NoCollision)
+        
+        -- 处理无碰撞逻辑
+        local function updateCollision()
+            if not Environment.Settings.NoCollision then return end
+            
+            local localPlayer = game:GetService("Players").LocalPlayer
+            if not localPlayer or not localPlayer.Character then return end
+            
+            for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                if player ~= localPlayer and player.Character then
+                    for _, part in pairs(player.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- 如果开启无碰撞
+        if Environment.Settings.NoCollision then
+            -- 初始更新
+            updateCollision()
+            
+            -- 添加心跳更新
+            if not Environment.NoCollisionConnection then
+                Environment.NoCollisionConnection = game:GetService("RunService").Heartbeat:Connect(updateCollision)
+            end
+        else
+            -- 关闭时断开连接
+            if Environment.NoCollisionConnection then
+                Environment.NoCollisionConnection:Disconnect()
+                Environment.NoCollisionConnection = nil
+            end
+            
+            -- 恢复碰撞
+            local localPlayer = game:GetService("Players").LocalPlayer
+            if localPlayer and localPlayer.Character then
+                for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                    if player ~= localPlayer and player.Character then
+                        for _, part in pairs(player.Character:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+    
+    -- 添加反AFK按钮功能
+    AntiAFKButton.MouseButton1Down:Connect(function()
+        Environment.Settings.AntiAFK = not Environment.Settings.AntiAFK
+        updateButtonState(AntiAFKButton, Environment.Settings.AntiAFK)
+        
+        -- 处理反AFK逻辑
+        if Environment.Settings.AntiAFK then
+            -- 检查firesignal支持
+            if not Environment.AntiAFKConnection then
+                pcall(function()
+                    assert(firesignal, "Your exploit does not support firesignal.")
+                    local UserInputService = game:GetService("UserInputService")
+                    local RunService = game:GetService("RunService")
+                    
+                    Environment.AntiAFKConnection = UserInputService.WindowFocusReleased:Connect(function()
+                        RunService.Stepped:Wait()
+                        pcall(firesignal, UserInputService.WindowFocused)
+                    end)
+                end)
+            end
+        else
+            -- 关闭时断开连接
+            if Environment.AntiAFKConnection then
+                Environment.AntiAFKConnection:Disconnect()
+                Environment.AntiAFKConnection = nil
+            end
+        end
+    end)
+    
+    -- 传送按钮点击事件
+    TeleportButton.MouseButton1Down:Connect(function()
+        _G.WRDClickTeleport = not _G.WRDClickTeleport
+        updateButtonState(TeleportButton, _G.WRDClickTeleport)
+        
+        -- 显示通知
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "PUPUHUB",
+            Text = "Click teleport " .. (_G.WRDClickTeleport and "enabled" or "disabled"),
+            Duration = 5
+        })
+    end)
     
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
@@ -391,36 +528,6 @@ function AimbotGui.Show()
     CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     CloseButton.TextSize = 14.000
     CloseButton.BorderSizePixel = 0
-    
-    SocialInfo.Name = "SocialInfo"
-    SocialInfo.Parent = MainFrame
-    SocialInfo.BackgroundTransparency = 1
-    SocialInfo.Position = UDim2.new(0.1, 0, startY + 0.6, 0)
-    SocialInfo.Size = UDim2.new(0.8, 0, 0, 25)
-    SocialInfo.Font = Enum.Font.GothamBold
-    SocialInfo.Text = "DC @puneet | discord.gg/eyrMV7MKck"
-    SocialInfo.TextColor3 = Color3.fromRGB(150, 150, 150)
-    SocialInfo.TextSize = 13.000
-    
-    -- 添加圆角
-    local function addCorner(element)
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 6)
-        corner.Parent = element
-    end
-    
-    addCorner(MainFrame)
-    addCorner(ToggleButton)
-    addCorner(TeamCheckButton)
-    addCorner(WallCheckButton)
-    addCorner(NoCollisionButton)
-    addCorner(AntiAFKButton)
-    addCorner(TeleportButton)
-    addCorner(FOVSlider)
-    addCorner(SliderButton)
-    addCorner(SensitivitySlider)
-    addCorner(SensSliderButton)
-    addCorner(CloseButton)
     
     -- 统一按钮状态颜色
     local function updateButtonState(button, enabled)
