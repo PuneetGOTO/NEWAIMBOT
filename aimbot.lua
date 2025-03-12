@@ -130,6 +130,7 @@ function AimbotGui.Show()
     local SensSliderButton = Instance.new("TextButton")
     local SensValue = Instance.new("TextLabel")
     local CloseButton = Instance.new("TextButton")
+    local SocialInfo = Instance.new("TextLabel")
     
     -- 设置GUI属性
     ScreenGui.Name = "AimbotGUI"
@@ -139,7 +140,7 @@ function AimbotGui.Show()
     
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
-    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     MainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
     MainFrame.Size = UDim2.new(0, 300, 0, 250)
     
@@ -149,9 +150,9 @@ function AimbotGui.Show()
     Title.Position = UDim2.new(0.5, -75, 0.05, 0)
     Title.Size = UDim2.new(0, 150, 0, 30)
     Title.Font = Enum.Font.GothamBold
-    Title.Text = "PUPUHUB AIMBOT"
+    Title.Text = "PUPUHUB"
+    Title.TextSize = 24.000
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextSize = 20.000
     
     ToggleButton.Name = "ToggleButton"
     ToggleButton.Parent = MainFrame
@@ -222,7 +223,7 @@ function AimbotGui.Show()
     
     SliderButton.Name = "SliderButton"
     SliderButton.Parent = FOVSlider
-    SliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SliderButton.BackgroundColor3 = Color3.fromRGB(0, 180, 30)
     SliderButton.Position = UDim2.new(0.5, -5, -1, 0)
     SliderButton.Size = UDim2.new(0, 10, 0, 20)
     SliderButton.Text = ""
@@ -245,7 +246,7 @@ function AimbotGui.Show()
     
     SensSliderButton.Name = "SensSliderButton"
     SensSliderButton.Parent = SensitivitySlider
-    SensSliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SensSliderButton.BackgroundColor3 = Color3.fromRGB(0, 180, 30)
     SensSliderButton.Position = UDim2.new(0, -5, -1, 0)
     SensSliderButton.Size = UDim2.new(0, 10, 0, 20)
     SensSliderButton.Text = ""
@@ -269,6 +270,16 @@ function AimbotGui.Show()
     CloseButton.Text = "CLOSE"
     CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     CloseButton.TextSize = 14.000
+    
+    SocialInfo.Name = "SocialInfo"
+    SocialInfo.Parent = MainFrame
+    SocialInfo.BackgroundTransparency = 1
+    SocialInfo.Position = UDim2.new(0.1, 0, 0.85, 0)
+    SocialInfo.Size = UDim2.new(0.8, 0, 0, 20)
+    SocialInfo.Font = Enum.Font.GothamBold
+    SocialInfo.Text = "DC @puneet | discord.gg/eyrMV7MKck"
+    SocialInfo.TextColor3 = Color3.fromRGB(128, 128, 128)
+    SocialInfo.TextSize = 12.000
     
     -- 添加圆角
     local function addCorner(element)
