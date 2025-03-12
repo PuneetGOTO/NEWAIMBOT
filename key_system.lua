@@ -1,227 +1,177 @@
--- 密钥验证系统
 local function createKeySystem()
-    -- 创建主GUI
+    -- 配置
+    local config = {
+        maxAttempts = 10  -- 最大尝试次数
+    }
+    
+    -- 创建GUI元素
     local ScreenGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local Title = Instance.new("TextLabel")
+    local KeyInput = Instance.new("TextBox")
+    local ActivateButton = Instance.new("TextButton")
+    local StatusLabel = Instance.new("TextLabel")
+    local AttemptsLabel = Instance.new("TextLabel")
+    local UICorner = Instance.new("UICorner")
+    local UICorner2 = Instance.new("UICorner")
+    local UICorner3 = Instance.new("UICorner")
+    
+    -- 设置GUI属性
     ScreenGui.Name = "KeySystem"
     ScreenGui.Parent = game:GetService("CoreGui")
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     
-    -- 创建主框架
-    local MainFrame = Instance.new("Frame")
-    MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 300, 0, 200)
-    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    MainFrame.BorderSizePixel = 0
-    MainFrame.Active = true
-    MainFrame.Draggable = true
-    MainFrame.Parent = ScreenGui
+    Frame.Name = "MainFrame"
+    Frame.Parent = ScreenGui
+    Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    Frame.Size = UDim2.new(0, 300, 0, 200)
     
-    -- 创建圆角
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 6)
-    UICorner.Parent = MainFrame
-    
-    -- 创建标题
-    local Title = Instance.new("TextLabel")
     Title.Name = "Title"
+    Title.Parent = Frame
+    Title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     Title.Size = UDim2.new(1, 0, 0, 30)
-    Title.Position = UDim2.new(0, 0, 0, 10)
-    Title.BackgroundTransparency = 1
+    Title.Font = Enum.Font.SourceSansBold
     Title.Text = "密钥验证系统"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextSize = 18
-    Title.Font = Enum.Font.SourceSansBold
-    Title.Parent = MainFrame
+    Title.TextSize = 16.000
     
-    -- 创建输入框
-    local KeyInput = Instance.new("TextBox")
     KeyInput.Name = "KeyInput"
-    KeyInput.Size = UDim2.new(0, 200, 0, 35)
-    KeyInput.Position = UDim2.new(0.5, -100, 0.4, 0)
+    KeyInput.Parent = Frame
     KeyInput.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    KeyInput.BorderSizePixel = 0
-    KeyInput.Text = ""
-    KeyInput.PlaceholderText = "请输入密钥..."
-    KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    KeyInput.TextSize = 14
+    KeyInput.Position = UDim2.new(0.1, 0, 0.3, 0)
+    KeyInput.Size = UDim2.new(0.8, 0, 0, 30)
     KeyInput.Font = Enum.Font.SourceSans
-    KeyInput.Parent = MainFrame
+    KeyInput.PlaceholderText = "请输入密钥..."
+    KeyInput.Text = ""
+    KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    KeyInput.TextSize = 14.000
+    KeyInput.ClearTextOnFocus = true
+    KeyInput.TextEditable = true
     
-    -- 创建输入框圆角
-    local UICorner2 = Instance.new("UICorner")
+    ActivateButton.Name = "ActivateButton"
+    ActivateButton.Parent = Frame
+    ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    ActivateButton.Position = UDim2.new(0.1, 0, 0.55, 0)
+    ActivateButton.Size = UDim2.new(0.8, 0, 0, 30)
+    ActivateButton.Font = Enum.Font.SourceSansBold
+    ActivateButton.Text = "验证"
+    ActivateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ActivateButton.TextSize = 14.000
+    
+    StatusLabel.Name = "StatusLabel"
+    StatusLabel.Parent = Frame
+    StatusLabel.BackgroundTransparency = 1
+    StatusLabel.Position = UDim2.new(0, 0, 0.75, 0)
+    StatusLabel.Size = UDim2.new(1, 0, 0, 20)
+    StatusLabel.Font = Enum.Font.SourceSans
+    StatusLabel.Text = "请输入密钥"
+    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    StatusLabel.TextSize = 14.000
+    
+    AttemptsLabel.Name = "AttemptsLabel"
+    AttemptsLabel.Parent = Frame
+    AttemptsLabel.BackgroundTransparency = 1
+    AttemptsLabel.Position = UDim2.new(0, 0, 0.85, 0)
+    AttemptsLabel.Size = UDim2.new(1, 0, 0, 20)
+    AttemptsLabel.Font = Enum.Font.SourceSans
+    AttemptsLabel.Text = string.format("剩余尝试次数: %d", config.maxAttempts)
+    AttemptsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    AttemptsLabel.TextSize = 14.000
+    
+    UICorner.CornerRadius = UDim.new(0, 6)
+    UICorner.Parent = Frame
+    
     UICorner2.CornerRadius = UDim.new(0, 6)
     UICorner2.Parent = KeyInput
     
-    -- 创建状态标签
-    local StatusLabel = Instance.new("TextLabel")
-    StatusLabel.Name = "StatusLabel"
-    StatusLabel.Size = UDim2.new(0, 200, 0, 20)
-    StatusLabel.Position = UDim2.new(0.5, -100, 0.85, 0)
-    StatusLabel.BackgroundTransparency = 1
-    StatusLabel.Text = "请输入密钥"
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    StatusLabel.TextSize = 12
-    StatusLabel.Font = Enum.Font.SourceSans
-    StatusLabel.Parent = MainFrame
-    
-    -- 创建验证按钮
-    local ActivateButton = Instance.new("TextButton")
-    ActivateButton.Name = "ActivateButton"
-    ActivateButton.Size = UDim2.new(0, 100, 0, 30)
-    ActivateButton.Position = UDim2.new(0.5, -50, 0.7, 0)
-    ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
-    ActivateButton.BorderSizePixel = 0
-    ActivateButton.Text = "验证"
-    ActivateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ActivateButton.TextSize = 14
-    ActivateButton.Font = Enum.Font.SourceSansBold
-    ActivateButton.AutoButtonColor = true
-    ActivateButton.Parent = MainFrame
-    
-    -- 创建按钮圆角
-    local UICorner3 = Instance.new("UICorner")
     UICorner3.CornerRadius = UDim.new(0, 6)
     UICorner3.Parent = ActivateButton
     
-    -- SHA-256加密函数
-    local function sha256(str)
-        local bit = bit32 or bit
-        local band = bit.band
-        local bnot = bit.bnot
-        local bxor = bit.bxor
-        local rshift = bit.rshift
-        local lshift = bit.lshift
-        local rrotate = bit.rrotate or function(x, n) return band(rshift(x, n), lshift(x, (32 - n))) end
-        
-        local H = {
-            0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-            0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
-        }
-        
-        local K = {
-            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
-            0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3
-        }
-        
-        local function digestblock(msg, i, H)
-            local w = {}
-            for j = 1, 16 do
-                w[j] = band(rshift(msg[i + j - 1], 24), 0xFF) * 0x1000000 +
-                       band(rshift(msg[i + j - 1], 16), 0xFF) * 0x10000 +
-                       band(rshift(msg[i + j - 1], 8), 0xFF) * 0x100 +
-                       band(msg[i + j - 1], 0xFF)
-            end
-            
-            local a, b, c, d, e, f, g, h = H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8]
-            
-            for i = 1, 16 do
-                local temp1 = h + bxor(rrotate(e, 6), rrotate(e, 11), rrotate(e, 25)) +
-                             bxor(band(e, f), band(bnot(e), g)) + K[i] + w[i]
-                local temp2 = bxor(rrotate(a, 2), rrotate(a, 13), rrotate(a, 22)) +
-                             bxor(band(a, b), band(a, c), band(b, c))
-                h = g
-                g = f
-                f = e
-                e = band(d + temp1, 0xFFFFFFFF)
-                d = c
-                c = b
-                b = a
-                a = band(temp1 + temp2, 0xFFFFFFFF)
-            end
-            
-            H[1] = band(H[1] + a, 0xFFFFFFFF)
-            H[2] = band(H[2] + b, 0xFFFFFFFF)
-            H[3] = band(H[3] + c, 0xFFFFFFFF)
-            H[4] = band(H[4] + d, 0xFFFFFFFF)
-            H[5] = band(H[5] + e, 0xFFFFFFFF)
-            H[6] = band(H[6] + f, 0xFFFFFFFF)
-            H[7] = band(H[7] + g, 0xFFFFFFFF)
-            H[8] = band(H[8] + h, 0xFFFFFFFF)
-        end
-        
-        local length = #str
-        local msg = {}
-        for i = 1, length do
-            msg[i] = string.byte(str, i)
-        end
-        
-        msg[length + 1] = 0x80
-        local l = length + 1
-        while l % 64 ~= 56 do
-            l = l + 1
-            msg[l] = 0
-        end
-        
-        local bits = length * 8
-        for i = 1, 8 do
-            msg[l + i] = band(rshift(bits, (8 - i) * 8), 0xFF)
-        end
-        
-        for i = 1, #msg, 64 do
-            digestblock(msg, i, H)
-        end
-        
-        local result = ""
-        for i = 1, 8 do
-            result = result .. string.format("%08x", H[i])
-        end
-        return result
-    end
+    -- 状态变量
+    local state = {
+        attempts = 0,
+        verified = false
+    }
     
     -- 验证密钥函数
     local function verifyKey(key)
-        print("正在验证密钥:", key)
-        print("密钥长度:", #key)
-        
-        local validHashes = {
-            ["1f4df8e0c4631599fd2f82d83f6c5e24a5a085b89f3e1a31a0c2cfc4dd86c052"] = true, -- AIMBOT2024
-            ["481f6cc0511143ccdd7e2d1b1b94faf0a700a8b49cd13922a70b5ae28acaa8c5"] = true, -- VIP888
-            ["89e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8"] = true  -- PRO999
-        }
-        
-        local hashedKey = sha256(key)
-        print("密钥哈希值:", hashedKey)
-        print("有效的哈希值:")
-        for hash, _ in pairs(validHashes) do
-            print(hash)
+        -- 检查尝试次数
+        if state.attempts >= config.maxAttempts then
+            print("超过最大尝试次数")
+            return false
         end
         
-        return validHashes[hashedKey] or false
+        -- 增加尝试次数
+        state.attempts = state.attempts + 1
+        AttemptsLabel.Text = string.format("剩余尝试次数: %d", config.maxAttempts - state.attempts)
+        
+        print("正在验证密钥:", key)
+        print("密钥长度:", #key)
+        print("剩余尝试次数:", config.maxAttempts - state.attempts)
+        
+        -- 检查密钥是否为空
+        if key == "" then
+            print("密钥不能为空")
+            return false
+        end
+        
+        -- 有效的密钥列表
+        local validKeys = {
+            "VIP888",
+            "AIMBOT2024",
+            "PRO999"
+        }
+        
+        -- 验证密钥
+        for _, validKey in ipairs(validKeys) do
+            if key == validKey then
+                print("密钥验证成功")
+                return true
+            end
+        end
+        
+        print("密钥验证失败")
+        return false
     end
     
-    -- 从GitHub加载脚本
-    local function loadScriptFromGitHub()
+    -- 加载主程序
+    local function loadMainScript()
+        print("正在加载主程序...")
+        
+        -- 从远程加载脚本
         local success, result = pcall(function()
-            local scriptUrl = "https://raw.githubusercontent.com/PuneetGOTO/NEWAIMBOT/main/aimbot.lua"
-            local scriptContent = game:HttpGet(scriptUrl)
-            loadstring(scriptContent)()
+            return game:HttpGet("https://raw.githubusercontent.com/PuneetGOTO/NEWAIMBOT/main/aimbot.lua")
         end)
         
         if not success then
-            warn("脚本加载失败:", result)
-            StatusLabel.Text = "脚本加载失败"
-            StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-            wait(2)
-            game.Players.LocalPlayer:Kick("脚本加载失败，请检查网络连接")
+            warn("下载脚本失败:", result)
+            return false
         end
+        
+        -- 加载并执行脚本
+        local success, result = pcall(loadstring(result))
+        if not success then
+            warn("加载脚本失败:", result)
+            return false
+        end
+        
+        print("脚本加载成功")
+        return true
     end
     
     -- 点击事件处理
-    local attempts = 0
-    local verified = false
-    
-    print("正在绑定按钮点击事件")
-    
-    -- 处理按钮点击
     local function onButtonClick()
         print("按钮被点击")
-        -- 视觉反馈
-        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
-        wait(0.1)
-        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
         
-        if attempts >= 3 then
+        -- 检查是否已经验证成功
+        if state.verified then
+            print("已经验证成功，无需重复验证")
+            return
+        end
+        
+        -- 检查是否超过最大尝试次数
+        if state.attempts >= config.maxAttempts then
             print("验证次数超限")
             StatusLabel.Text = "验证次数超限！"
             StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
@@ -229,26 +179,36 @@ local function createKeySystem()
             game.Players.LocalPlayer:Kick("验证失败")
             return
         end
-
-        local key = KeyInput.Text
-        print("输入的密钥:", key)
         
+        -- 获取输入的密钥
+        local key = KeyInput.Text
+        KeyInput.Text = ""  -- 清空输入框
+        
+        -- 验证密钥
         if verifyKey(key) then
             print("密钥验证成功")
-            StatusLabel.Text = "验证成功！正在加载脚本..."
+            state.verified = true
+            StatusLabel.Text = "验证成功！正在启动..."
             StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-            verified = true
+            
+            -- 等待短暂时间后销毁GUI
             wait(1)
-            ScreenGui:Destroy()
-            loadScriptFromGitHub()
+            
+            -- 加载主程序
+            if loadMainScript() then
+                ScreenGui:Destroy()
+            else
+                StatusLabel.Text = "主程序加载失败！"
+                StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+                wait(2)
+                game.Players.LocalPlayer:Kick("主程序加载失败")
+            end
         else
             print("密钥验证失败")
-            attempts = attempts + 1
-            print("当前尝试次数:", attempts)
-            StatusLabel.Text = "密钥错误！剩余尝试次数: " .. (3 - attempts)
+            StatusLabel.Text = "密钥错误！"
             StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
             
-            if attempts >= 3 then
+            if state.attempts >= config.maxAttempts then
                 wait(2)
                 game.Players.LocalPlayer:Kick("验证失败")
             end
@@ -257,53 +217,71 @@ local function createKeySystem()
     
     -- 绑定按钮点击事件
     ActivateButton.MouseButton1Click:Connect(onButtonClick)
+    print("按钮点击事件绑定完成")
+    
+    -- 添加按钮视觉反馈
+    ActivateButton.MouseButton1Down:Connect(function()
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
+    end)
+    
+    ActivateButton.MouseButton1Up:Connect(function()
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    end)
     
     -- 添加按钮悬停效果
     ActivateButton.MouseEnter:Connect(function()
-        print("鼠标进入按钮")
         ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 140, 230)
     end)
     
     ActivateButton.MouseLeave:Connect(function()
-        print("鼠标离开按钮")
-        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
     end)
     
-    -- 添加拖动功能
+    -- 添加键盘事件处理
     local UserInputService = game:GetService("UserInputService")
-    local dragToggle
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if not gameProcessed and input.KeyCode == Enum.KeyCode.Return then
+            onButtonClick()
+        end
+    end)
+    
+    -- 拖动功能
+    local dragging
+    local dragInput
     local dragStart
     local startPos
     
-    local function updateInput(input)
+    local function update(input)
         local delta = input.Position - dragStart
-        local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        game:GetService("TweenService"):Create(MainFrame, TweenInfo.new(0.1), {Position = position}):Play()
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
     
-    MainFrame.InputBegan:Connect(function(input)
+    Frame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragToggle = true
+            dragging = true
             dragStart = input.Position
-            startPos = MainFrame.Position
+            startPos = Frame.Position
+            
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
-                    dragToggle = false
+                    dragging = false
                 end
             end)
         end
     end)
     
-    UserInputService.InputChanged:Connect(function(input)
+    Frame.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            if dragToggle then
-                updateInput(input)
-            end
+            dragInput = input
         end
     end)
     
-    return true
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
 end
 
--- 运行验证系统
+-- 创建密钥系统
 createKeySystem()
