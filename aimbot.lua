@@ -62,18 +62,22 @@ local function CreateReopenButton()
     local ReopenButton = Instance.new("TextButton")
     
     ScreenGui.Name = "ReopenGUI"
-    ScreenGui.Parent = game:GetService("CoreGui")
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.ResetOnSpawn = false
     
     ReopenButton.Name = "ReopenButton"
     ReopenButton.Parent = ScreenGui
-    ReopenButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    ReopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ReopenButton.BackgroundTransparency = 1
     ReopenButton.Position = UDim2.new(0, 10, 0.5, -15)
     ReopenButton.Size = UDim2.new(0, 40, 0, 30)
     ReopenButton.Font = Enum.Font.GothamBold
     ReopenButton.Text = "神"
-    ReopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ReopenButton.TextSize = 16.000
+    ReopenButton.TextColor3 = Color3.fromRGB(255, 192, 203) -- 粉色
+    ReopenButton.TextSize = 24.000
+    ReopenButton.TextStrokeColor3 = Color3.fromRGB(255, 182, 193) -- 浅粉色描边
+    ReopenButton.TextStrokeTransparency = 0.5
     
     -- 添加圆角
     local corner = Instance.new("UICorner")
@@ -82,8 +86,10 @@ local function CreateReopenButton()
     
     -- 添加点击事件
     ReopenButton.MouseButton1Click:Connect(function()
-        CreateAimbotGUI()
-        ScreenGui:Destroy()
+        if not game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
+            CreateAimbotGUI()
+            ScreenGui:Destroy()
+        end
     end)
     
     -- 添加悬停效果
@@ -345,8 +351,10 @@ local function CreateAimbotGUI()
     end)
     
     CloseButton.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-        CreateReopenButton()
+        if ScreenGui and ScreenGui.Parent then
+            ScreenGui:Destroy()
+            CreateReopenButton()
+        end
     end)
     
     -- 初始化按钮状态
@@ -360,7 +368,11 @@ local function CreateAimbotGUI()
 end
 
 -- 创建GUI
-CreateAimbotGUI()
+if not game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
+    CreateAimbotGUI()
+else
+    CreateReopenButton()
+end
 
 --// Functions
 
