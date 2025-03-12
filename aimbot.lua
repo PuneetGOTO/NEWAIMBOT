@@ -40,7 +40,8 @@ Environment.Settings = {
 	TriggerKey = "MouseButton2",
 	Toggle = false,
 	LockPart = "Head", -- Body part to lock on
-	NoCollision = false -- 添加无碰撞设置
+	NoCollision = false, -- 添加无碰撞设置
+	AntiAFK = false -- 添加反AFK设置
 }
 
 Environment.FOVSettings = {
@@ -119,7 +120,8 @@ function AimbotGui.Show()
     local ToggleButton = Instance.new("TextButton")
     local TeamCheckButton = Instance.new("TextButton")
     local WallCheckButton = Instance.new("TextButton")
-    local NoCollisionButton = Instance.new("TextButton") -- 添加无碰撞按钮
+    local NoCollisionButton = Instance.new("TextButton")
+    local AntiAFKButton = Instance.new("TextButton")
     local FOVSlider = Instance.new("Frame")
     local SliderButton = Instance.new("TextButton")
     local FOVValue = Instance.new("TextLabel")
@@ -190,10 +192,20 @@ function AimbotGui.Show()
     NoCollisionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     NoCollisionButton.TextSize = 14.000
     
+    AntiAFKButton.Name = "AntiAFKButton"
+    AntiAFKButton.Parent = MainFrame
+    AntiAFKButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    AntiAFKButton.Position = UDim2.new(0.1, 0, 0.75, 0)
+    AntiAFKButton.Size = UDim2.new(0.8, 0, 0, 30)
+    AntiAFKButton.Font = Enum.Font.GothamBold
+    AntiAFKButton.Text = "ANTI AFK: OFF"
+    AntiAFKButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    AntiAFKButton.TextSize = 14.000
+    
     FOVSlider.Name = "FOVSlider"
     FOVSlider.Parent = MainFrame
     FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    FOVSlider.Position = UDim2.new(0.1, 0, 0.8, 0)
+    FOVSlider.Position = UDim2.new(0.1, 0, 0.85, 0)
     FOVSlider.Size = UDim2.new(0.8, 0, 0, 5)
     
     SliderButton.Name = "SliderButton"
@@ -258,6 +270,7 @@ function AimbotGui.Show()
     addCorner(TeamCheckButton)
     addCorner(WallCheckButton)
     addCorner(NoCollisionButton)
+    addCorner(AntiAFKButton)
     addCorner(FOVSlider)
     addCorner(SliderButton)
     addCorner(SensitivitySlider)
@@ -377,6 +390,36 @@ function AimbotGui.Show()
         end
     end)
     
+    -- 添加反AFK按钮功能
+    AntiAFKButton.MouseButton1Down:Connect(function()
+        Environment.Settings.AntiAFK = not Environment.Settings.AntiAFK
+        AntiAFKButton.Text = "ANTI AFK: " .. (Environment.Settings.AntiAFK and "ON" or "OFF")
+        AntiAFKButton.BackgroundColor3 = Environment.Settings.AntiAFK and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        
+        -- 处理反AFK逻辑
+        if Environment.Settings.AntiAFK then
+            -- 检查firesignal支持
+            if not Environment.AntiAFKConnection then
+                pcall(function()
+                    assert(firesignal, "Your exploit does not support firesignal.")
+                    local UserInputService = game:GetService("UserInputService")
+                    local RunService = game:GetService("RunService")
+                    
+                    Environment.AntiAFKConnection = UserInputService.WindowFocusReleased:Connect(function()
+                        RunService.Stepped:Wait()
+                        pcall(firesignal, UserInputService.WindowFocused)
+                    end)
+                end)
+            end
+        else
+            -- 关闭时断开连接
+            if Environment.AntiAFKConnection then
+                Environment.AntiAFKConnection:Disconnect()
+                Environment.AntiAFKConnection = nil
+            end
+        end
+    end)
+    
     -- FOV滑块功能
     local function updateFOV(input)
         local sliderPosition = math.clamp((input.Position.X - FOVSlider.AbsolutePosition.X) / FOVSlider.AbsoluteSize.X, 0, 1)
@@ -435,6 +478,7 @@ function AimbotGui.Show()
     TeamCheckButton.BackgroundColor3 = Environment.Settings.TeamCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     NoCollisionButton.BackgroundColor3 = Environment.Settings.NoCollision and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    AntiAFKButton.BackgroundColor3 = Environment.Settings.AntiAFK and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     
     -- 初始化滑块位置
     SliderButton.Position = UDim2.new(Environment.FOVSettings.Amount / 180, -5, -1, 0)
@@ -614,7 +658,8 @@ function Environment.Functions:ResetSettings()
 		TriggerKey = "MouseButton2",
 		Toggle = false,
 		LockPart = "Head", -- Body part to lock on
-		NoCollision = false -- 添加无碰撞设置
+		NoCollision = false, -- 添加无碰撞设置
+		AntiAFK = false -- 添加反AFK设置
 	}
 
 	Environment.FOVSettings = {
