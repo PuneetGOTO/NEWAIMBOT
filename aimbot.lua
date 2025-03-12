@@ -141,17 +141,56 @@ function AimbotGui.Show()
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
     MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
-    MainFrame.Size = UDim2.new(0, 300, 0, 250)
+    MainFrame.Size = UDim2.new(0, 280, 0, 380)
+    MainFrame.Position = UDim2.new(0.5, -140, 0.5, -190)
     
+    -- 添加阴影效果
+    local Shadow = Instance.new("ImageLabel")
+    Shadow.Name = "Shadow"
+    Shadow.Parent = MainFrame
+    Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    Shadow.BackgroundTransparency = 1
+    Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Shadow.Size = UDim2.new(1.1, 0, 1.1, 0)
+    Shadow.ZIndex = -1
+    Shadow.Image = "rbxassetid://5554236805"
+    Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    Shadow.ImageTransparency = 0.4
+    Shadow.ScaleType = Enum.ScaleType.Slice
+    Shadow.SliceCenter = Rect.new(23, 23, 277, 277)
+
+    -- 添加渐变背景
+    local Gradient = Instance.new("UIGradient")
+    Gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 25)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
+    })
+    Gradient.Rotation = 45
+    Gradient.Parent = MainFrame
+
+    -- 添加标题装饰线
+    local TitleLine = Instance.new("Frame")
+    TitleLine.Name = "TitleLine"
+    TitleLine.Parent = MainFrame
+    TitleLine.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    TitleLine.Position = UDim2.new(0.1, 0, 0.12, 0)
+    TitleLine.Size = UDim2.new(0.8, 0, 0, 2)
+    TitleLine.BorderSizePixel = 0
+    local function addCorner(element)
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 6)
+        corner.Parent = element
+    end
+    addCorner(TitleLine)
+
     Title.Name = "Title"
     Title.Parent = MainFrame
     Title.BackgroundTransparency = 1
-    Title.Position = UDim2.new(0.5, -75, 0.05, 0)
-    Title.Size = UDim2.new(0, 150, 0, 30)
+    Title.Position = UDim2.new(0.5, -70, 0.02, 0)
+    Title.Size = UDim2.new(0, 140, 0, 40)
     Title.Font = Enum.Font.GothamBold
     Title.Text = "PUPUHUB"
-    Title.TextSize = 28.000
+    Title.TextSize = 32.000
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     
     -- 添加拖动功能
@@ -200,6 +239,19 @@ function AimbotGui.Show()
         button.TextSize = 14.000
         button.BorderSizePixel = 0
         
+        -- 添加渐变效果
+        local buttonGradient = Instance.new("UIGradient")
+        buttonGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200))
+        })
+        buttonGradient.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.9),
+            NumberSequenceKeypoint.new(1, 0.8)
+        })
+        buttonGradient.Rotation = 45
+        buttonGradient.Parent = button
+        
         -- 添加悬停效果
         button.MouseEnter:Connect(function()
             game:GetService("TweenService"):Create(button, TweenInfo.new(0.3), {
@@ -214,55 +266,68 @@ function AimbotGui.Show()
         end)
     end
     
+    local buttonHeight = 35
+    local buttonSpacing = 0.02
+    local startY = 0.15
+    
     ToggleButton.Name = "ToggleButton"
     ToggleButton.Parent = MainFrame
-    ToggleButton.Position = UDim2.new(0.1, 0, 0.2, 0)
-    ToggleButton.Size = UDim2.new(0.8, 0, 0, 30)
+    ToggleButton.Position = UDim2.new(0.1, 0, startY, 0)
+    ToggleButton.Size = UDim2.new(0.8, 0, 0, buttonHeight)
     styleButton(ToggleButton)
     ToggleButton.Text = "ENABLED"
     
     TeamCheckButton.Name = "TeamCheckButton"
     TeamCheckButton.Parent = MainFrame
-    TeamCheckButton.Position = UDim2.new(0.1, 0, 0.35, 0)
-    TeamCheckButton.Size = UDim2.new(0.8, 0, 0, 30)
+    TeamCheckButton.Position = UDim2.new(0.1, 0, startY + 0.1, 0)
+    TeamCheckButton.Size = UDim2.new(0.8, 0, 0, buttonHeight)
     styleButton(TeamCheckButton)
     TeamCheckButton.Text = "TEAM CHECK: OFF"
     
     WallCheckButton.Name = "WallCheckButton"
     WallCheckButton.Parent = MainFrame
-    WallCheckButton.Position = UDim2.new(0.1, 0, 0.5, 0)
-    WallCheckButton.Size = UDim2.new(0.8, 0, 0, 30)
+    WallCheckButton.Position = UDim2.new(0.1, 0, startY + 0.2, 0)
+    WallCheckButton.Size = UDim2.new(0.8, 0, 0, buttonHeight)
     styleButton(WallCheckButton)
     WallCheckButton.Text = "WALL CHECK: OFF"
     
     NoCollisionButton.Name = "NoCollisionButton"
     NoCollisionButton.Parent = MainFrame
-    NoCollisionButton.Position = UDim2.new(0.1, 0, 0.65, 0)
-    NoCollisionButton.Size = UDim2.new(0.8, 0, 0, 30)
+    NoCollisionButton.Position = UDim2.new(0.1, 0, startY + 0.3, 0)
+    NoCollisionButton.Size = UDim2.new(0.8, 0, 0, buttonHeight)
     styleButton(NoCollisionButton)
     NoCollisionButton.Text = "NO COLLISION: OFF"
     
     AntiAFKButton.Name = "AntiAFKButton"
     AntiAFKButton.Parent = MainFrame
-    AntiAFKButton.Position = UDim2.new(0.1, 0, 0.75, 0)
-    AntiAFKButton.Size = UDim2.new(0.8, 0, 0, 30)
+    AntiAFKButton.Position = UDim2.new(0.1, 0, startY + 0.4, 0)
+    AntiAFKButton.Size = UDim2.new(0.8, 0, 0, buttonHeight)
     styleButton(AntiAFKButton)
     AntiAFKButton.Text = "ANTI AFK: OFF"
     
     -- 添加传送按钮
     TeleportButton.Name = "TeleportButton"
     TeleportButton.Parent = MainFrame
-    TeleportButton.Position = UDim2.new(0.1, 0, 0.80, 0)
-    TeleportButton.Size = UDim2.new(0.8, 0, 0, 30)
+    TeleportButton.Position = UDim2.new(0.1, 0, startY + 0.5, 0)
+    TeleportButton.Size = UDim2.new(0.8, 0, 0, buttonHeight)
     styleButton(TeleportButton)
     TeleportButton.Text = "TELEPORT: OFF"
     
     FOVSlider.Name = "FOVSlider"
     FOVSlider.Parent = MainFrame
     FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    FOVSlider.Position = UDim2.new(0.1, 0, 0.87, 0)
+    FOVSlider.Position = UDim2.new(0.1, 0, startY + 0.7, 0)
     FOVSlider.Size = UDim2.new(0.8, 0, 0, 5)
     FOVSlider.BorderSizePixel = 0
+    
+    -- 添加滑块轨道渐变
+    local sliderGradient = Instance.new("UIGradient")
+    sliderGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 35))
+    })
+    sliderGradient.Rotation = 90
+    sliderGradient.Parent = FOVSlider
     
     SliderButton.Name = "SliderButton"
     SliderButton.Parent = FOVSlider
@@ -275,7 +340,7 @@ function AimbotGui.Show()
     FOVValue.Name = "FOVValue"
     FOVValue.Parent = FOVSlider
     FOVValue.BackgroundTransparency = 1
-    FOVValue.Position = UDim2.new(0, 0, -1.5, 0)
+    FOVValue.Position = UDim2.new(0, 0, -1.2, 0)
     FOVValue.Size = UDim2.new(1, 0, 0, 20)
     FOVValue.Font = Enum.Font.GothamBold
     FOVValue.Text = "FOV: 90"
@@ -285,9 +350,18 @@ function AimbotGui.Show()
     SensitivitySlider.Name = "SensitivitySlider"
     SensitivitySlider.Parent = MainFrame
     SensitivitySlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    SensitivitySlider.Position = UDim2.new(0.1, 0, 0.92, 0)
+    SensitivitySlider.Position = UDim2.new(0.1, 0, startY + 0.8, 0)
     SensitivitySlider.Size = UDim2.new(0.8, 0, 0, 5)
     SensitivitySlider.BorderSizePixel = 0
+    
+    -- 添加滑块轨道渐变
+    local sensSliderGradient = Instance.new("UIGradient")
+    sensSliderGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 35))
+    })
+    sensSliderGradient.Rotation = 90
+    sensSliderGradient.Parent = SensitivitySlider
     
     SensSliderButton.Name = "SensSliderButton"
     SensSliderButton.Parent = SensitivitySlider
@@ -300,7 +374,7 @@ function AimbotGui.Show()
     SensValue.Name = "SensValue"
     SensValue.Parent = SensitivitySlider
     SensValue.BackgroundTransparency = 1
-    SensValue.Position = UDim2.new(0, 0, -1.5, 0)
+    SensValue.Position = UDim2.new(0, 0, -1.2, 0)
     SensValue.Size = UDim2.new(1, 0, 0, 20)
     SensValue.Font = Enum.Font.GothamBold
     SensValue.Text = "SENSITIVITY: 0"
@@ -310,8 +384,8 @@ function AimbotGui.Show()
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
     CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
-    CloseButton.Position = UDim2.new(0.1, 0, 0.96, 0)
-    CloseButton.Size = UDim2.new(0.8, 0, 0, 20)
+    CloseButton.Position = UDim2.new(0.1, 0, startY + 0.9, 0)
+    CloseButton.Size = UDim2.new(0.8, 0, 0, 30)
     CloseButton.Font = Enum.Font.GothamBold
     CloseButton.Text = "CLOSE"
     CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -321,12 +395,12 @@ function AimbotGui.Show()
     SocialInfo.Name = "SocialInfo"
     SocialInfo.Parent = MainFrame
     SocialInfo.BackgroundTransparency = 1
-    SocialInfo.Position = UDim2.new(0.1, 0, 0.85, 0)
-    SocialInfo.Size = UDim2.new(0.8, 0, 0, 20)
+    SocialInfo.Position = UDim2.new(0.1, 0, startY + 0.6, 0)
+    SocialInfo.Size = UDim2.new(0.8, 0, 0, 25)
     SocialInfo.Font = Enum.Font.GothamBold
     SocialInfo.Text = "DC @puneet | discord.gg/eyrMV7MKck"
-    SocialInfo.TextColor3 = Color3.fromRGB(128, 128, 128)
-    SocialInfo.TextSize = 12.000
+    SocialInfo.TextColor3 = Color3.fromRGB(150, 150, 150)
+    SocialInfo.TextSize = 13.000
     
     -- 添加圆角
     local function addCorner(element)
