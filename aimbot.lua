@@ -518,197 +518,44 @@ function AimbotGui.Show()
         })
     end)
     
+    -- 设置关闭按钮
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
     CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
-    CloseButton.Position = UDim2.new(0.1, 0, startY + 0.9, 0)
-    CloseButton.Size = UDim2.new(0.8, 0, 0, 30)
+    CloseButton.Position = UDim2.new(1, -30, 0, 10)
+    CloseButton.Size = UDim2.new(0, 20, 0, 20)
     CloseButton.Font = Enum.Font.GothamBold
-    CloseButton.Text = "CLOSE"
+    CloseButton.Text = "X"
     CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     CloseButton.TextSize = 14.000
     CloseButton.BorderSizePixel = 0
+    CloseButton.Visible = true
+    addCorner(CloseButton)
     
-    -- 统一按钮状态颜色
-    local function updateButtonState(button, enabled)
-        local targetColor = enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
-        local targetText = button.Text:gsub("ON", "OFF"):gsub("OFF", "ON")
-        
-        game:GetService("TweenService"):Create(button, TweenInfo.new(0.3), {
-            BackgroundColor3 = targetColor
+    -- 添加关闭按钮悬停效果
+    CloseButton.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(CloseButton, TweenInfo.new(0.3), {
+            BackgroundColor3 = Color3.fromRGB(200, 20, 50)
         }):Play()
-        
-        if enabled then
-            button.Text = button.Text:gsub("OFF", "ON")
-        else
-            button.Text = button.Text:gsub("ON", "OFF")
-        end
-    end
-    
-    -- 按钮功能
-    ToggleButton.MouseButton1Down:Connect(function()
-        Environment.Settings.Enabled = not Environment.Settings.Enabled
-        updateButtonState(ToggleButton, Environment.Settings.Enabled)
     end)
     
-    TeamCheckButton.MouseButton1Down:Connect(function()
-        Environment.Settings.TeamCheck = not Environment.Settings.TeamCheck
-        updateButtonState(TeamCheckButton, Environment.Settings.TeamCheck)
+    CloseButton.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(CloseButton, TweenInfo.new(0.3), {
+            BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+        }):Play()
     end)
     
-    WallCheckButton.MouseButton1Down:Connect(function()
-        Environment.Settings.WallCheck = not Environment.Settings.WallCheck
-        updateButtonState(WallCheckButton, Environment.Settings.WallCheck)
-    end)
-    
-    -- 添加无碰撞按钮功能
-    NoCollisionButton.MouseButton1Down:Connect(function()
-        Environment.Settings.NoCollision = not Environment.Settings.NoCollision
-        updateButtonState(NoCollisionButton, Environment.Settings.NoCollision)
-        
-        -- 处理无碰撞逻辑
-        local function updateCollision()
-            if not Environment.Settings.NoCollision then return end
-            
-            local localPlayer = game:GetService("Players").LocalPlayer
-            if not localPlayer or not localPlayer.Character then return end
-            
-            for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-                if player ~= localPlayer and player.Character then
-                    for _, part in pairs(player.Character:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = false
-                        end
-                    end
-                end
-            end
-        end
-        
-        -- 如果开启无碰撞
-        if Environment.Settings.NoCollision then
-            -- 初始更新
-            updateCollision()
-            
-            -- 添加心跳更新
-            if not Environment.NoCollisionConnection then
-                Environment.NoCollisionConnection = game:GetService("RunService").Heartbeat:Connect(updateCollision)
-            end
-        else
-            -- 关闭时断开连接
-            if Environment.NoCollisionConnection then
-                Environment.NoCollisionConnection:Disconnect()
-                Environment.NoCollisionConnection = nil
-            end
-            
-            -- 恢复碰撞
-            local localPlayer = game:GetService("Players").LocalPlayer
-            if localPlayer and localPlayer.Character then
-                for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-                    if player ~= localPlayer and player.Character then
-                        for _, part in pairs(player.Character:GetDescendants()) do
-                            if part:IsA("BasePart") then
-                                part.CanCollide = true
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end)
-    
-    -- 添加反AFK按钮功能
-    AntiAFKButton.MouseButton1Down:Connect(function()
-        Environment.Settings.AntiAFK = not Environment.Settings.AntiAFK
-        updateButtonState(AntiAFKButton, Environment.Settings.AntiAFK)
-        
-        -- 处理反AFK逻辑
-        if Environment.Settings.AntiAFK then
-            -- 检查firesignal支持
-            if not Environment.AntiAFKConnection then
-                pcall(function()
-                    assert(firesignal, "Your exploit does not support firesignal.")
-                    local UserInputService = game:GetService("UserInputService")
-                    local RunService = game:GetService("RunService")
-                    
-                    Environment.AntiAFKConnection = UserInputService.WindowFocusReleased:Connect(function()
-                        RunService.Stepped:Wait()
-                        pcall(firesignal, UserInputService.WindowFocused)
-                    end)
-                end)
-            end
-        else
-            -- 关闭时断开连接
-            if Environment.AntiAFKConnection then
-                Environment.AntiAFKConnection:Disconnect()
-                Environment.AntiAFKConnection = nil
-            end
-        end
-    end)
-    
-    -- 传送按钮点击事件
-    TeleportButton.MouseButton1Down:Connect(function()
-        _G.WRDClickTeleport = not _G.WRDClickTeleport
-        updateButtonState(TeleportButton, _G.WRDClickTeleport)
+    -- 关闭按钮点击事件
+    CloseButton.MouseButton1Down:Connect(function()
+        ScreenGui:Destroy()
+        CreateReopenButton()  -- 创建重新打开按钮
         
         -- 显示通知
         game.StarterGui:SetCore("SendNotification", {
             Title = "PUPUHUB",
-            Text = "Click teleport " .. (_G.WRDClickTeleport and "enabled" or "disabled"),
+            Text = "Interface minimized. Click 神 to reopen.",
             Duration = 5
         })
-    end)
-    
-    -- FOV滑块功能
-    local function updateFOV(input)
-        local sliderPosition = math.clamp((input.Position.X - FOVSlider.AbsolutePosition.X) / FOVSlider.AbsoluteSize.X, 0, 1)
-        local newFOV = math.floor(sliderPosition * 180)
-        Environment.FOVSettings.Amount = newFOV
-        FOVValue.Text = "FOV: " .. newFOV
-        SliderButton.Position = UDim2.new(sliderPosition, -5, -1, 0)
-    end
-    
-    SliderButton.MouseButton1Down:Connect(function()
-        local connection
-        connection = UserInputService.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement then
-                updateFOV(input)
-            end
-        end)
-        
-        UserInputService.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                connection:Disconnect()
-            end
-        end)
-    end)
-    
-    -- Sensitivity滑块功能
-    local function updateSensitivity(input)
-        local sliderPosition = math.clamp((input.Position.X - SensitivitySlider.AbsolutePosition.X) / SensitivitySlider.AbsoluteSize.X, 0, 1)
-        local newSens = math.floor(sliderPosition * 10) / 10
-        Environment.Settings.Sensitivity = newSens
-        SensValue.Text = "SENSITIVITY: " .. newSens
-        SensSliderButton.Position = UDim2.new(sliderPosition, -5, -1, 0)
-    end
-    
-    SensSliderButton.MouseButton1Down:Connect(function()
-        local connection
-        connection = UserInputService.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement then
-                updateSensitivity(input)
-            end
-        end)
-        
-        UserInputService.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                connection:Disconnect()
-            end
-        end)
-    end)
-    
-    CloseButton.MouseButton1Down:Connect(function()
-        ScreenGui:Destroy()
-        CreateReopenButton()
     end)
     
     -- 初始化按钮状态
