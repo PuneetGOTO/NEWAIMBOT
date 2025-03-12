@@ -57,11 +57,60 @@ Environment.FOVSettings = {
 Environment.FOVCircle = Drawing.new("Circle")
 
 --// GUI Creation
-local function CreateAimbotGUI()
+local AimbotGui = {}
+
+local function CreateReopenButton()
     -- 如果已存在则先移除
-    if game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
-        game:GetService("CoreGui"):FindFirstChild("AimbotGUI"):Destroy()
-    end
+    pcall(function()
+        if game:GetService("CoreGui"):FindFirstChild("ReopenGUI") then
+            game:GetService("CoreGui"):FindFirstChild("ReopenGUI"):Destroy()
+        end
+    end)
+
+    local ScreenGui = Instance.new("ScreenGui")
+    local ReopenButton = Instance.new("TextButton")
+    
+    ScreenGui.Name = "ReopenGUI"
+    ScreenGui.Parent = game:GetService("CoreGui")
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.DisplayOrder = 999999
+    
+    ReopenButton.Name = "ReopenButton"
+    ReopenButton.Parent = ScreenGui
+    ReopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ReopenButton.BackgroundTransparency = 1
+    ReopenButton.Position = UDim2.new(0, 10, 0.4, 0)
+    ReopenButton.Size = UDim2.new(0, 50, 0, 50)
+    ReopenButton.Font = Enum.Font.GothamBold
+    ReopenButton.Text = "神"
+    ReopenButton.TextColor3 = Color3.fromRGB(255, 192, 203) -- 粉色
+    ReopenButton.TextSize = 35.000
+    ReopenButton.TextStrokeColor3 = Color3.fromRGB(255, 182, 193) -- 浅粉色描边
+    ReopenButton.TextStrokeTransparency = 0.5
+    
+    -- 添加点击事件
+    ReopenButton.MouseButton1Down:Connect(function()
+        ScreenGui:Destroy()
+        AimbotGui.Show()
+    end)
+    
+    -- 添加悬停效果
+    ReopenButton.MouseEnter:Connect(function()
+        ReopenButton.TextSize = 40
+    end)
+    
+    ReopenButton.MouseLeave:Connect(function()
+        ReopenButton.TextSize = 35
+    end)
+end
+
+function AimbotGui.Show()
+    -- 如果已存在则先移除
+    pcall(function()
+        if game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
+            game:GetService("CoreGui"):FindFirstChild("AimbotGUI"):Destroy()
+        end
+    end)
     
     local ScreenGui = Instance.new("ScreenGui")
     local MainFrame = Instance.new("Frame")
@@ -241,19 +290,19 @@ local function CreateAimbotGUI()
     end)
     
     -- 按钮功能
-    ToggleButton.MouseButton1Click:Connect(function()
+    ToggleButton.MouseButton1Down:Connect(function()
         Environment.Settings.Enabled = not Environment.Settings.Enabled
         ToggleButton.Text = Environment.Settings.Enabled and "ENABLED" or "DISABLED"
         ToggleButton.BackgroundColor3 = Environment.Settings.Enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     end)
     
-    TeamCheckButton.MouseButton1Click:Connect(function()
+    TeamCheckButton.MouseButton1Down:Connect(function()
         Environment.Settings.TeamCheck = not Environment.Settings.TeamCheck
         TeamCheckButton.Text = "TEAM CHECK: " .. (Environment.Settings.TeamCheck and "ON" or "OFF")
         TeamCheckButton.BackgroundColor3 = Environment.Settings.TeamCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     end)
     
-    WallCheckButton.MouseButton1Click:Connect(function()
+    WallCheckButton.MouseButton1Down:Connect(function()
         Environment.Settings.WallCheck = not Environment.Settings.WallCheck
         WallCheckButton.Text = "WALL CHECK: " .. (Environment.Settings.WallCheck and "ON" or "OFF")
         WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
@@ -307,12 +356,9 @@ local function CreateAimbotGUI()
         end)
     end)
     
-    CloseButton.MouseButton1Click:Connect(function()
-        if ScreenGui and ScreenGui.Parent then
-            ScreenGui:Destroy()
-            task.wait()
-            CreateReopenButton()
-        end
+    CloseButton.MouseButton1Down:Connect(function()
+        ScreenGui:Destroy()
+        CreateReopenButton()
     end)
     
     -- 初始化按钮状态
@@ -324,77 +370,6 @@ local function CreateAimbotGUI()
     SliderButton.Position = UDim2.new(Environment.FOVSettings.Amount / 180, -5, -1, 0)
     SensSliderButton.Position = UDim2.new(Environment.Settings.Sensitivity / 1, -5, -1, 0)
 end
-
-local function CreateReopenButton()
-    -- 如果已存在则先移除
-    if game:GetService("CoreGui"):FindFirstChild("ReopenGUI") then
-        game:GetService("CoreGui"):FindFirstChild("ReopenGUI"):Destroy()
-    end
-
-    local ScreenGui = Instance.new("ScreenGui")
-    local ReopenButton = Instance.new("TextButton")
-    
-    ScreenGui.Name = "ReopenGUI"
-    ScreenGui.Parent = game:GetService("CoreGui")
-    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.DisplayOrder = 999999
-    
-    ReopenButton.Name = "ReopenButton"
-    ReopenButton.Parent = ScreenGui
-    ReopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    ReopenButton.BackgroundTransparency = 1
-    ReopenButton.Position = UDim2.new(0, 10, 0.4, 0)
-    ReopenButton.Size = UDim2.new(0, 50, 0, 50)
-    ReopenButton.Font = Enum.Font.GothamBold
-    ReopenButton.Text = "神"
-    ReopenButton.TextColor3 = Color3.fromRGB(255, 192, 203) -- 粉色
-    ReopenButton.TextSize = 35.000
-    ReopenButton.TextStrokeColor3 = Color3.fromRGB(255, 182, 193) -- 浅粉色描边
-    ReopenButton.TextStrokeTransparency = 0.5
-    ReopenButton.Active = true
-    ReopenButton.AutoButtonColor = false
-    ReopenButton.Modal = true
-    
-    -- 添加点击事件
-    local debounce = false
-    ReopenButton.MouseButton1Click:Connect(function()
-        if debounce then return end
-        debounce = true
-        
-        ScreenGui:Destroy()
-        task.wait(0.1)
-        CreateAimbotGUI()
-        
-        task.wait(0.5)
-        debounce = false
-    end)
-    
-    -- 添加悬停效果
-    ReopenButton.MouseEnter:Connect(function()
-        game:GetService("TweenService"):Create(ReopenButton, TweenInfo.new(0.3), {
-            TextSize = 40.000,
-            TextTransparency = 0.2
-        }):Play()
-    end)
-    
-    ReopenButton.MouseLeave:Connect(function()
-        game:GetService("TweenService"):Create(ReopenButton, TweenInfo.new(0.3), {
-            TextSize = 35.000,
-            TextTransparency = 0
-        }):Play()
-    end)
-end
-
--- 初始化界面
-pcall(function()
-    if game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
-        game:GetService("CoreGui"):FindFirstChild("AimbotGUI"):Destroy()
-    end
-    if game:GetService("CoreGui"):FindFirstChild("ReopenGUI") then
-        game:GetService("CoreGui"):FindFirstChild("ReopenGUI"):Destroy()
-    end
-    CreateAimbotGUI()
-end)
 
 --// Functions
 
@@ -587,3 +562,14 @@ end
 --// Load
 
 Load()
+
+-- 初始化界面
+pcall(function()
+    if game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
+        game:GetService("CoreGui"):FindFirstChild("AimbotGUI"):Destroy()
+    end
+    if game:GetService("CoreGui"):FindFirstChild("ReopenGUI") then
+        game:GetService("CoreGui"):FindFirstChild("ReopenGUI"):Destroy()
+    end
+    AimbotGui.Show()
+end)
