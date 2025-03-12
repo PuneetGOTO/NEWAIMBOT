@@ -207,7 +207,7 @@ function AimbotGui.Show()
     TeleportButton.Name = "TeleportButton"
     TeleportButton.Parent = MainFrame
     TeleportButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
-    TeleportButton.Position = UDim2.new(0.1, 0, 0.85, 0)
+    TeleportButton.Position = UDim2.new(0.1, 0, 0.80, 0)
     TeleportButton.Size = UDim2.new(0.8, 0, 0, 30)
     TeleportButton.Font = Enum.Font.GothamBold
     TeleportButton.Text = "TELEPORT: OFF"
@@ -217,7 +217,7 @@ function AimbotGui.Show()
     FOVSlider.Name = "FOVSlider"
     FOVSlider.Parent = MainFrame
     FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    FOVSlider.Position = UDim2.new(0.1, 0, 0.9, 0)
+    FOVSlider.Position = UDim2.new(0.1, 0, 0.87, 0)
     FOVSlider.Size = UDim2.new(0.8, 0, 0, 5)
     
     SliderButton.Name = "SliderButton"
@@ -240,7 +240,7 @@ function AimbotGui.Show()
     SensitivitySlider.Name = "SensitivitySlider"
     SensitivitySlider.Parent = MainFrame
     SensitivitySlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    SensitivitySlider.Position = UDim2.new(0.1, 0, 0.95, 0)
+    SensitivitySlider.Position = UDim2.new(0.1, 0, 0.92, 0)
     SensitivitySlider.Size = UDim2.new(0.8, 0, 0, 5)
     
     SensSliderButton.Name = "SensSliderButton"
@@ -263,7 +263,7 @@ function AimbotGui.Show()
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
     CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
-    CloseButton.Position = UDim2.new(0.1, 0, 0.99, 0)
+    CloseButton.Position = UDim2.new(0.1, 0, 0.96, 0)
     CloseButton.Size = UDim2.new(0.8, 0, 0, 20)
     CloseButton.Font = Enum.Font.GothamBold
     CloseButton.Text = "CLOSE"
