@@ -57,6 +57,49 @@ Environment.FOVSettings = {
 Environment.FOVCircle = Drawing.new("Circle")
 
 --// GUI Creation
+local function CreateReopenButton()
+    local ScreenGui = Instance.new("ScreenGui")
+    local ReopenButton = Instance.new("TextButton")
+    
+    ScreenGui.Name = "ReopenGUI"
+    ScreenGui.Parent = game:GetService("CoreGui")
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    ReopenButton.Name = "ReopenButton"
+    ReopenButton.Parent = ScreenGui
+    ReopenButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    ReopenButton.Position = UDim2.new(0, 10, 0.5, -15)
+    ReopenButton.Size = UDim2.new(0, 40, 0, 30)
+    ReopenButton.Font = Enum.Font.GothamBold
+    ReopenButton.Text = "神"
+    ReopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ReopenButton.TextSize = 16.000
+    
+    -- 添加圆角
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = ReopenButton
+    
+    -- 添加点击事件
+    ReopenButton.MouseButton1Click:Connect(function()
+        CreateAimbotGUI()
+        ScreenGui:Destroy()
+    end)
+    
+    -- 添加悬停效果
+    ReopenButton.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(ReopenButton, TweenInfo.new(0.3), {
+            BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        }):Play()
+    end)
+    
+    ReopenButton.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(ReopenButton, TweenInfo.new(0.3), {
+            BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        }):Play()
+    end)
+end
+
 local function CreateAimbotGUI()
     local ScreenGui = Instance.new("ScreenGui")
     local MainFrame = Instance.new("Frame")
@@ -303,6 +346,7 @@ local function CreateAimbotGUI()
     
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
+        CreateReopenButton()
     end)
     
     -- 初始化按钮状态
