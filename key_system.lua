@@ -1,7 +1,7 @@
 local function createKeySystem()
     -- 配置
     local config = {
-        maxAttempts = 3  -- 最大尝试次数
+        maxAttempts = inf  -- 最大尝试次数
     }
     
     -- 创建GUI元素
