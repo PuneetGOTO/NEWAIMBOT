@@ -403,12 +403,12 @@ getgenv().Environment = {
         TeamCheck = false,
         AliveCheck = true,
         WallCheck = false,
-        Sensitivity = 0, -- Animation length (in seconds) before fully locking onto target
-        ThirdPerson = false, -- Uses third person camera if available
+        Sensitivity = 0,
+        ThirdPerson = false,
         ThirdPersonSensitivity = 3,
         TriggerKey = "MouseButton2",
         Toggle = false,
-        LockPart = "Head" -- Body part to lock on
+        LockPart = "Head"
     },
 
     FOVSettings = {
@@ -426,7 +426,43 @@ getgenv().Environment = {
     FOVCircle = Drawing.new("Circle"),
 
     Locked = nil,
-    ServiceConnections = {}
+    ServiceConnections = {},
+    Functions = {
+        ResetSettings = function()
+            Environment.Settings = {
+                Enabled = true,
+                TeamCheck = false,
+                AliveCheck = true,
+                WallCheck = false,
+                Sensitivity = 0,
+                ThirdPerson = false,
+                ThirdPersonSensitivity = 3,
+                TriggerKey = "MouseButton2",
+                Toggle = false,
+                LockPart = "Head"
+            }
+
+            Environment.FOVSettings = {
+                Enabled = true,
+                Visible = true,
+                Amount = 90,
+                Color = Color3.fromRGB(255, 255, 255),
+                LockedColor = Color3.fromRGB(255, 70, 70),
+                Transparency = 0.5,
+                Sides = 60,
+                Thickness = 1,
+                Filled = false
+            }
+        end,
+
+        Unload = function()
+            Environment.FOVCircle:Remove()
+            
+            for _, Connection in pairs(Environment.ServiceConnections) do
+                Connection:Disconnect()
+            end
+        end
+    }
 }
 
 --// Main
@@ -461,41 +497,6 @@ local function Load()
             end
         end
     end)
-end
-
-function Environment.Functions:ResetSettings()
-    Environment.Settings = {
-        Enabled = true,
-        TeamCheck = false,
-        AliveCheck = true,
-        WallCheck = false,
-        Sensitivity = 0,
-        ThirdPerson = false,
-        ThirdPersonSensitivity = 3,
-        TriggerKey = "MouseButton2",
-        Toggle = false,
-        LockPart = "Head"
-    }
-
-    Environment.FOVSettings = {
-        Enabled = true,
-        Visible = true,
-        Amount = 90,
-        Color = Color3.fromRGB(255, 255, 255),
-        LockedColor = Color3.fromRGB(255, 70, 70),
-        Transparency = 0.5,
-        Sides = 60,
-        Thickness = 1,
-        Filled = false
-    }
-end
-
-function Environment.Functions:Unload()
-    Environment.FOVCircle:Remove()
-    
-    for _, Connection in pairs(Environment.ServiceConnections) do
-        Connection:Disconnect()
-    end
 end
 
 createMainGUI()
