@@ -422,30 +422,42 @@ function AimbotGui.Show()
     addCorner(SensSliderButton)
     addCorner(CloseButton)
     
+    -- 统一按钮状态颜色
+    local function updateButtonState(button, enabled)
+        local targetColor = enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        local targetText = button.Text:gsub("ON", "OFF"):gsub("OFF", "ON")
+        
+        game:GetService("TweenService"):Create(button, TweenInfo.new(0.3), {
+            BackgroundColor3 = targetColor
+        }):Play()
+        
+        if enabled then
+            button.Text = button.Text:gsub("OFF", "ON")
+        else
+            button.Text = button.Text:gsub("ON", "OFF")
+        end
+    end
+    
     -- 按钮功能
     ToggleButton.MouseButton1Down:Connect(function()
         Environment.Settings.Enabled = not Environment.Settings.Enabled
-        ToggleButton.Text = Environment.Settings.Enabled and "ENABLED" or "DISABLED"
-        ToggleButton.BackgroundColor3 = Environment.Settings.Enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        updateButtonState(ToggleButton, Environment.Settings.Enabled)
     end)
     
     TeamCheckButton.MouseButton1Down:Connect(function()
         Environment.Settings.TeamCheck = not Environment.Settings.TeamCheck
-        TeamCheckButton.Text = "TEAM CHECK: " .. (Environment.Settings.TeamCheck and "ON" or "OFF")
-        TeamCheckButton.BackgroundColor3 = Environment.Settings.TeamCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        updateButtonState(TeamCheckButton, Environment.Settings.TeamCheck)
     end)
     
     WallCheckButton.MouseButton1Down:Connect(function()
         Environment.Settings.WallCheck = not Environment.Settings.WallCheck
-        WallCheckButton.Text = "WALL CHECK: " .. (Environment.Settings.WallCheck and "ON" or "OFF")
-        WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        updateButtonState(WallCheckButton, Environment.Settings.WallCheck)
     end)
     
     -- 添加无碰撞按钮功能
     NoCollisionButton.MouseButton1Down:Connect(function()
         Environment.Settings.NoCollision = not Environment.Settings.NoCollision
-        NoCollisionButton.Text = "NO COLLISION: " .. (Environment.Settings.NoCollision and "ON" or "OFF")
-        NoCollisionButton.BackgroundColor3 = Environment.Settings.NoCollision and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        updateButtonState(NoCollisionButton, Environment.Settings.NoCollision)
         
         -- 处理无碰撞逻辑
         local function updateCollision()
@@ -500,8 +512,7 @@ function AimbotGui.Show()
     -- 添加反AFK按钮功能
     AntiAFKButton.MouseButton1Down:Connect(function()
         Environment.Settings.AntiAFK = not Environment.Settings.AntiAFK
-        AntiAFKButton.Text = "ANTI AFK: " .. (Environment.Settings.AntiAFK and "ON" or "OFF")
-        AntiAFKButton.BackgroundColor3 = Environment.Settings.AntiAFK and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        updateButtonState(AntiAFKButton, Environment.Settings.AntiAFK)
         
         -- 处理反AFK逻辑
         if Environment.Settings.AntiAFK then
@@ -530,8 +541,7 @@ function AimbotGui.Show()
     -- 传送按钮点击事件
     TeleportButton.MouseButton1Down:Connect(function()
         _G.WRDClickTeleport = not _G.WRDClickTeleport
-        TeleportButton.Text = "TELEPORT: " .. (_G.WRDClickTeleport and "ON" or "OFF")
-        TeleportButton.BackgroundColor3 = _G.WRDClickTeleport and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        updateButtonState(TeleportButton, _G.WRDClickTeleport)
         
         -- 显示通知
         game.StarterGui:SetCore("SendNotification", {
@@ -595,16 +605,12 @@ function AimbotGui.Show()
     end)
     
     -- 初始化按钮状态
-    ToggleButton.BackgroundColor3 = Environment.Settings.Enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
-    TeamCheckButton.BackgroundColor3 = Environment.Settings.TeamCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
-    WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
-    NoCollisionButton.BackgroundColor3 = Environment.Settings.NoCollision and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
-    AntiAFKButton.BackgroundColor3 = Environment.Settings.AntiAFK and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
-    TeleportButton.BackgroundColor3 = _G.WRDClickTeleport and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
-    
-    -- 初始化滑块位置
-    SliderButton.Position = UDim2.new(Environment.FOVSettings.Amount / 180, -5, -1, 0)
-    SensSliderButton.Position = UDim2.new(Environment.Settings.Sensitivity / 1, -5, -1, 0)
+    updateButtonState(ToggleButton, Environment.Settings.Enabled)
+    updateButtonState(TeamCheckButton, Environment.Settings.TeamCheck)
+    updateButtonState(WallCheckButton, Environment.Settings.WallCheck)
+    updateButtonState(NoCollisionButton, Environment.Settings.NoCollision)
+    updateButtonState(AntiAFKButton, Environment.Settings.AntiAFK)
+    updateButtonState(TeleportButton, _G.WRDClickTeleport)
 end
 
 --// Functions
