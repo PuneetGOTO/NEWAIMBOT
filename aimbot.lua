@@ -1,5 +1,4 @@
-
-  --// Cache
+--// Cache
 
 local select = select
 local pcall, getgenv, next, Vector2, mathclamp, type, mousemoverel = select(1, pcall, getgenv, next, Vector2.new, math.clamp, type, mousemoverel or (Input and Input.MouseMove))
@@ -56,6 +55,268 @@ Environment.FOVSettings = {
 }
 
 Environment.FOVCircle = Drawing.new("Circle")
+
+--// GUI Creation
+local function CreateAimbotGUI()
+    local ScreenGui = Instance.new("ScreenGui")
+    local MainFrame = Instance.new("Frame")
+    local Title = Instance.new("TextLabel")
+    local ToggleButton = Instance.new("TextButton")
+    local TeamCheckButton = Instance.new("TextButton")
+    local WallCheckButton = Instance.new("TextButton")
+    local FOVSlider = Instance.new("Frame")
+    local SliderButton = Instance.new("TextButton")
+    local FOVValue = Instance.new("TextLabel")
+    local SensitivitySlider = Instance.new("Frame")
+    local SensSliderButton = Instance.new("TextButton")
+    local SensValue = Instance.new("TextLabel")
+    local CloseButton = Instance.new("TextButton")
+    
+    -- 设置GUI属性
+    ScreenGui.Name = "AimbotGUI"
+    ScreenGui.Parent = game:GetService("CoreGui")
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    MainFrame.Name = "MainFrame"
+    MainFrame.Parent = ScreenGui
+    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
+    MainFrame.Size = UDim2.new(0, 300, 0, 250)
+    
+    Title.Name = "Title"
+    Title.Parent = MainFrame
+    Title.BackgroundTransparency = 1
+    Title.Position = UDim2.new(0.5, -75, 0.05, 0)
+    Title.Size = UDim2.new(0, 150, 0, 30)
+    Title.Font = Enum.Font.GothamBold
+    Title.Text = "PUPUHUB AIMBOT"
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 20.000
+    
+    ToggleButton.Name = "ToggleButton"
+    ToggleButton.Parent = MainFrame
+    ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    ToggleButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+    ToggleButton.Size = UDim2.new(0.8, 0, 0, 30)
+    ToggleButton.Font = Enum.Font.GothamBold
+    ToggleButton.Text = "ENABLED"
+    ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleButton.TextSize = 14.000
+    
+    TeamCheckButton.Name = "TeamCheckButton"
+    TeamCheckButton.Parent = MainFrame
+    TeamCheckButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    TeamCheckButton.Position = UDim2.new(0.1, 0, 0.35, 0)
+    TeamCheckButton.Size = UDim2.new(0.8, 0, 0, 30)
+    TeamCheckButton.Font = Enum.Font.GothamBold
+    TeamCheckButton.Text = "TEAM CHECK: OFF"
+    TeamCheckButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TeamCheckButton.TextSize = 14.000
+    
+    WallCheckButton.Name = "WallCheckButton"
+    WallCheckButton.Parent = MainFrame
+    WallCheckButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    WallCheckButton.Position = UDim2.new(0.1, 0, 0.5, 0)
+    WallCheckButton.Size = UDim2.new(0.8, 0, 0, 30)
+    WallCheckButton.Font = Enum.Font.GothamBold
+    WallCheckButton.Text = "WALL CHECK: OFF"
+    WallCheckButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    WallCheckButton.TextSize = 14.000
+    
+    FOVSlider.Name = "FOVSlider"
+    FOVSlider.Parent = MainFrame
+    FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    FOVSlider.Position = UDim2.new(0.1, 0, 0.65, 0)
+    FOVSlider.Size = UDim2.new(0.8, 0, 0, 5)
+    
+    SliderButton.Name = "SliderButton"
+    SliderButton.Parent = FOVSlider
+    SliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SliderButton.Position = UDim2.new(0.5, -5, -1, 0)
+    SliderButton.Size = UDim2.new(0, 10, 0, 20)
+    SliderButton.Text = ""
+    
+    FOVValue.Name = "FOVValue"
+    FOVValue.Parent = FOVSlider
+    FOVValue.BackgroundTransparency = 1
+    FOVValue.Position = UDim2.new(0, 0, -1.5, 0)
+    FOVValue.Size = UDim2.new(1, 0, 0, 20)
+    FOVValue.Font = Enum.Font.GothamBold
+    FOVValue.Text = "FOV: 90"
+    FOVValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+    FOVValue.TextSize = 14.000
+    
+    SensitivitySlider.Name = "SensitivitySlider"
+    SensitivitySlider.Parent = MainFrame
+    SensitivitySlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    SensitivitySlider.Position = UDim2.new(0.1, 0, 0.8, 0)
+    SensitivitySlider.Size = UDim2.new(0.8, 0, 0, 5)
+    
+    SensSliderButton.Name = "SensSliderButton"
+    SensSliderButton.Parent = SensitivitySlider
+    SensSliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SensSliderButton.Position = UDim2.new(0, -5, -1, 0)
+    SensSliderButton.Size = UDim2.new(0, 10, 0, 20)
+    SensSliderButton.Text = ""
+    
+    SensValue.Name = "SensValue"
+    SensValue.Parent = SensitivitySlider
+    SensValue.BackgroundTransparency = 1
+    SensValue.Position = UDim2.new(0, 0, -1.5, 0)
+    SensValue.Size = UDim2.new(1, 0, 0, 20)
+    SensValue.Font = Enum.Font.GothamBold
+    SensValue.Text = "SENSITIVITY: 0"
+    SensValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SensValue.TextSize = 14.000
+    
+    CloseButton.Name = "CloseButton"
+    CloseButton.Parent = MainFrame
+    CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    CloseButton.Position = UDim2.new(0.1, 0, 0.9, 0)
+    CloseButton.Size = UDim2.new(0.8, 0, 0, 20)
+    CloseButton.Font = Enum.Font.GothamBold
+    CloseButton.Text = "CLOSE"
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.TextSize = 14.000
+    
+    -- 添加圆角
+    local function addCorner(element)
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 6)
+        corner.Parent = element
+    end
+    
+    addCorner(MainFrame)
+    addCorner(ToggleButton)
+    addCorner(TeamCheckButton)
+    addCorner(WallCheckButton)
+    addCorner(FOVSlider)
+    addCorner(SliderButton)
+    addCorner(SensitivitySlider)
+    addCorner(SensSliderButton)
+    addCorner(CloseButton)
+    
+    -- 添加拖动功能
+    local UserInputService = game:GetService("UserInputService")
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
+    
+    local function update(input)
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+    
+    MainFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    MainFrame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+    
+    -- 按钮功能
+    ToggleButton.MouseButton1Click:Connect(function()
+        Environment.Settings.Enabled = not Environment.Settings.Enabled
+        ToggleButton.Text = Environment.Settings.Enabled and "ENABLED" or "DISABLED"
+        ToggleButton.BackgroundColor3 = Environment.Settings.Enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    end)
+    
+    TeamCheckButton.MouseButton1Click:Connect(function()
+        Environment.Settings.TeamCheck = not Environment.Settings.TeamCheck
+        TeamCheckButton.Text = "TEAM CHECK: " .. (Environment.Settings.TeamCheck and "ON" or "OFF")
+        TeamCheckButton.BackgroundColor3 = Environment.Settings.TeamCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    end)
+    
+    WallCheckButton.MouseButton1Click:Connect(function()
+        Environment.Settings.WallCheck = not Environment.Settings.WallCheck
+        WallCheckButton.Text = "WALL CHECK: " .. (Environment.Settings.WallCheck and "ON" or "OFF")
+        WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    end)
+    
+    -- FOV滑块功能
+    local function updateFOV(input)
+        local sliderPosition = math.clamp((input.Position.X - FOVSlider.AbsolutePosition.X) / FOVSlider.AbsoluteSize.X, 0, 1)
+        local newFOV = math.floor(sliderPosition * 180)
+        Environment.FOVSettings.Amount = newFOV
+        FOVValue.Text = "FOV: " .. newFOV
+        SliderButton.Position = UDim2.new(sliderPosition, -5, -1, 0)
+    end
+    
+    SliderButton.MouseButton1Down:Connect(function()
+        local connection
+        connection = UserInputService.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                updateFOV(input)
+            end
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                connection:Disconnect()
+            end
+        end)
+    end)
+    
+    -- Sensitivity滑块功能
+    local function updateSensitivity(input)
+        local sliderPosition = math.clamp((input.Position.X - SensitivitySlider.AbsolutePosition.X) / SensitivitySlider.AbsoluteSize.X, 0, 1)
+        local newSens = math.floor(sliderPosition * 10) / 10
+        Environment.Settings.Sensitivity = newSens
+        SensValue.Text = "SENSITIVITY: " .. newSens
+        SensSliderButton.Position = UDim2.new(sliderPosition, -5, -1, 0)
+    end
+    
+    SensSliderButton.MouseButton1Down:Connect(function()
+        local connection
+        connection = UserInputService.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                updateSensitivity(input)
+            end
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                connection:Disconnect()
+            end
+        end)
+    end)
+    
+    CloseButton.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+    
+    -- 初始化按钮状态
+    ToggleButton.BackgroundColor3 = Environment.Settings.Enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    TeamCheckButton.BackgroundColor3 = Environment.Settings.TeamCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    
+    -- 初始化滑块位置
+    SliderButton.Position = UDim2.new(Environment.FOVSettings.Amount / 180, -5, -1, 0)
+    SensSliderButton.Position = UDim2.new(Environment.Settings.Sensitivity / 1, -5, -1, 0)
+end
+
+-- 创建GUI
+CreateAimbotGUI()
 
 --// Functions
 
