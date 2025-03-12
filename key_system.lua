@@ -82,7 +82,7 @@ local function createKeySystem()
     SocialInfo.Position = UDim2.new(0.1, 0, 0.75, 0)
     SocialInfo.Size = UDim2.new(0.8, 0, 0, 20)
     SocialInfo.Font = Enum.Font.SourceSans
-    SocialInfo.Text = "YT @acsu123 | DISCORD .gg/hohohub"
+    SocialInfo.Text = "DC @puneet | https://discord.gg/eyrMV7MKck"
     SocialInfo.TextColor3 = Color3.fromRGB(255, 255, 255)
     SocialInfo.TextSize = 14.000
     
@@ -121,6 +121,52 @@ local function createKeySystem()
     addCorner(SupportButton)
     addCorner(CloseButton)
     
+    -- 状态变量
+    local state = {
+        attempts = 0,
+        verified = false
+    }
+    
+    -- 验证密钥函数
+    local function verifyKey(key)
+        -- 检查尝试次数
+        if state.attempts >= config.maxAttempts then
+            print("超过最大尝试次数")
+            return false
+        end
+        
+        -- 增加尝试次数
+        state.attempts = state.attempts + 1
+        
+        print("正在验证密钥:", key)
+        print("密钥长度:", #key)
+        print("剩余尝试次数:", config.maxAttempts - state.attempts)
+        
+        -- 检查密钥是否为空
+        if key == "" then
+            print("密钥不能为空")
+            return false
+        end
+        
+        -- 有效的密钥列表
+        local validKeys = {
+            "VIP888",
+            "AIMBOT2024",
+            "PRO999"
+        }
+        
+        -- 验证密钥
+        for _, validKey in ipairs(validKeys) do
+            if key == validKey then
+                print("密钥验证成功")
+                return true
+            end
+        end
+        
+        print("密钥验证失败")
+        return false
+    end
+    
     -- 按钮点击事件
     GetKeyButton1.MouseButton1Click:Connect(function()
         setclipboard("https://link-target.net/98542/hoho-hub-key-1")
@@ -142,28 +188,54 @@ local function createKeySystem()
         local key = KeyInput.Text
         KeyInput.Text = ""
         
-        if key == "" then
+        -- 检查是否已经验证成功
+        if state.verified then
+            print("已经验证成功，无需重复验证")
+            return
+        end
+        
+        -- 检查是否超过最大尝试次数
+        if state.attempts >= config.maxAttempts then
+            print("验证次数超限")
+            wait(2)
+            game.Players.LocalPlayer:Kick("验证失败")
             return
         end
         
         -- 验证密钥
-        local success, result = pcall(function()
-            return game:HttpGet("https://raw.githubusercontent.com/PuneetGOTO/NEWAIMBOT/main/aimbot.lua")
-        end)
-        
-        if not success then
-            warn("下载脚本失败:", result)
-            return
+        if verifyKey(key) then
+            print("密钥验证成功")
+            state.verified = true
+            
+            -- 等待短暂时间后销毁GUI
+            wait(1)
+            
+            -- 从远程加载脚本
+            local success, result = pcall(function()
+                return game:HttpGet("https://raw.githubusercontent.com/PuneetGOTO/NEWAIMBOT/main/aimbot.lua")
+            end)
+            
+            if not success then
+                warn("下载脚本失败:", result)
+                return
+            end
+            
+            -- 加载并执行脚本
+            local success, result = pcall(loadstring(result))
+            if not success then
+                warn("加载脚本失败:", result)
+                wait(2)
+                game.Players.LocalPlayer:Kick("主程序加载失败")
+                return
+            end
+            
+            ScreenGui:Destroy()
+        else
+            if state.attempts >= config.maxAttempts then
+                wait(2)
+                game.Players.LocalPlayer:Kick("验证失败")
+            end
         end
-        
-        -- 加载并执行脚本
-        local success, result = pcall(loadstring(result))
-        if not success then
-            warn("加载脚本失败:", result)
-            return
-        end
-        
-        ScreenGui:Destroy()
     end)
     
     -- 添加拖动功能
