@@ -140,7 +140,7 @@ function AimbotGui.Show()
     
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
-    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     MainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
     MainFrame.Size = UDim2.new(0, 300, 0, 250)
     
@@ -151,75 +151,118 @@ function AimbotGui.Show()
     Title.Size = UDim2.new(0, 150, 0, 30)
     Title.Font = Enum.Font.GothamBold
     Title.Text = "PUPUHUB"
-    Title.TextSize = 24.000
+    Title.TextSize = 28.000
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- 添加拖动功能
+    local UserInputService = game:GetService("UserInputService")
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
+    
+    local function updateDrag(input)
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+    
+    Title.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    Title.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            updateDrag(input)
+        end
+    end)
+    
+    -- 统一按钮风格
+    local function styleButton(button)
+        button.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+        button.Font = Enum.Font.GothamBold
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.TextSize = 14.000
+        button.BorderSizePixel = 0
+        
+        -- 添加悬停效果
+        button.MouseEnter:Connect(function()
+            game:GetService("TweenService"):Create(button, TweenInfo.new(0.3), {
+                BackgroundColor3 = Color3.fromRGB(200, 20, 50)
+            }):Play()
+        end)
+        
+        button.MouseLeave:Connect(function()
+            game:GetService("TweenService"):Create(button, TweenInfo.new(0.3), {
+                BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+            }):Play()
+        end)
+    end
     
     ToggleButton.Name = "ToggleButton"
     ToggleButton.Parent = MainFrame
-    ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
     ToggleButton.Position = UDim2.new(0.1, 0, 0.2, 0)
     ToggleButton.Size = UDim2.new(0.8, 0, 0, 30)
-    ToggleButton.Font = Enum.Font.GothamBold
+    styleButton(ToggleButton)
     ToggleButton.Text = "ENABLED"
-    ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleButton.TextSize = 14.000
     
     TeamCheckButton.Name = "TeamCheckButton"
     TeamCheckButton.Parent = MainFrame
-    TeamCheckButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
     TeamCheckButton.Position = UDim2.new(0.1, 0, 0.35, 0)
     TeamCheckButton.Size = UDim2.new(0.8, 0, 0, 30)
-    TeamCheckButton.Font = Enum.Font.GothamBold
+    styleButton(TeamCheckButton)
     TeamCheckButton.Text = "TEAM CHECK: OFF"
-    TeamCheckButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TeamCheckButton.TextSize = 14.000
     
     WallCheckButton.Name = "WallCheckButton"
     WallCheckButton.Parent = MainFrame
-    WallCheckButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
     WallCheckButton.Position = UDim2.new(0.1, 0, 0.5, 0)
     WallCheckButton.Size = UDim2.new(0.8, 0, 0, 30)
-    WallCheckButton.Font = Enum.Font.GothamBold
+    styleButton(WallCheckButton)
     WallCheckButton.Text = "WALL CHECK: OFF"
-    WallCheckButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    WallCheckButton.TextSize = 14.000
     
     NoCollisionButton.Name = "NoCollisionButton"
     NoCollisionButton.Parent = MainFrame
-    NoCollisionButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
     NoCollisionButton.Position = UDim2.new(0.1, 0, 0.65, 0)
     NoCollisionButton.Size = UDim2.new(0.8, 0, 0, 30)
-    NoCollisionButton.Font = Enum.Font.GothamBold
+    styleButton(NoCollisionButton)
     NoCollisionButton.Text = "NO COLLISION: OFF"
-    NoCollisionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    NoCollisionButton.TextSize = 14.000
     
     AntiAFKButton.Name = "AntiAFKButton"
     AntiAFKButton.Parent = MainFrame
-    AntiAFKButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
     AntiAFKButton.Position = UDim2.new(0.1, 0, 0.75, 0)
     AntiAFKButton.Size = UDim2.new(0.8, 0, 0, 30)
-    AntiAFKButton.Font = Enum.Font.GothamBold
+    styleButton(AntiAFKButton)
     AntiAFKButton.Text = "ANTI AFK: OFF"
-    AntiAFKButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    AntiAFKButton.TextSize = 14.000
     
     -- 添加传送按钮
     TeleportButton.Name = "TeleportButton"
     TeleportButton.Parent = MainFrame
-    TeleportButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
     TeleportButton.Position = UDim2.new(0.1, 0, 0.80, 0)
     TeleportButton.Size = UDim2.new(0.8, 0, 0, 30)
-    TeleportButton.Font = Enum.Font.GothamBold
+    styleButton(TeleportButton)
     TeleportButton.Text = "TELEPORT: OFF"
-    TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TeleportButton.TextSize = 14.000
     
     FOVSlider.Name = "FOVSlider"
     FOVSlider.Parent = MainFrame
     FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     FOVSlider.Position = UDim2.new(0.1, 0, 0.87, 0)
     FOVSlider.Size = UDim2.new(0.8, 0, 0, 5)
+    FOVSlider.BorderSizePixel = 0
     
     SliderButton.Name = "SliderButton"
     SliderButton.Parent = FOVSlider
@@ -227,6 +270,7 @@ function AimbotGui.Show()
     SliderButton.Position = UDim2.new(0.5, -5, -1, 0)
     SliderButton.Size = UDim2.new(0, 10, 0, 20)
     SliderButton.Text = ""
+    SliderButton.BorderSizePixel = 0
     
     FOVValue.Name = "FOVValue"
     FOVValue.Parent = FOVSlider
@@ -243,6 +287,7 @@ function AimbotGui.Show()
     SensitivitySlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     SensitivitySlider.Position = UDim2.new(0.1, 0, 0.92, 0)
     SensitivitySlider.Size = UDim2.new(0.8, 0, 0, 5)
+    SensitivitySlider.BorderSizePixel = 0
     
     SensSliderButton.Name = "SensSliderButton"
     SensSliderButton.Parent = SensitivitySlider
@@ -250,6 +295,7 @@ function AimbotGui.Show()
     SensSliderButton.Position = UDim2.new(0, -5, -1, 0)
     SensSliderButton.Size = UDim2.new(0, 10, 0, 20)
     SensSliderButton.Text = ""
+    SensSliderButton.BorderSizePixel = 0
     
     SensValue.Name = "SensValue"
     SensValue.Parent = SensitivitySlider
@@ -270,6 +316,7 @@ function AimbotGui.Show()
     CloseButton.Text = "CLOSE"
     CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     CloseButton.TextSize = 14.000
+    CloseButton.BorderSizePixel = 0
     
     SocialInfo.Name = "SocialInfo"
     SocialInfo.Parent = MainFrame
@@ -300,44 +347,6 @@ function AimbotGui.Show()
     addCorner(SensitivitySlider)
     addCorner(SensSliderButton)
     addCorner(CloseButton)
-    
-    -- 添加拖动功能
-    local UserInputService = game:GetService("UserInputService")
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
-    
-    local function update(input)
-        local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-    
-    MainFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = MainFrame.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-    
-    MainFrame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
-        end
-    end)
     
     -- 按钮功能
     ToggleButton.MouseButton1Down:Connect(function()
