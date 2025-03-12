@@ -39,7 +39,8 @@ Environment.Settings = {
 	ThirdPersonSensitivity = 3, -- Boundary: 0.1 - 5
 	TriggerKey = "MouseButton2",
 	Toggle = false,
-	LockPart = "Head" -- Body part to lock on
+	LockPart = "Head", -- Body part to lock on
+	NoCollision = false -- 添加无碰撞设置
 }
 
 Environment.FOVSettings = {
@@ -118,6 +119,7 @@ function AimbotGui.Show()
     local ToggleButton = Instance.new("TextButton")
     local TeamCheckButton = Instance.new("TextButton")
     local WallCheckButton = Instance.new("TextButton")
+    local NoCollisionButton = Instance.new("TextButton") -- 添加无碰撞按钮
     local FOVSlider = Instance.new("Frame")
     local SliderButton = Instance.new("TextButton")
     local FOVValue = Instance.new("TextLabel")
@@ -178,10 +180,20 @@ function AimbotGui.Show()
     WallCheckButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     WallCheckButton.TextSize = 14.000
     
+    NoCollisionButton.Name = "NoCollisionButton"
+    NoCollisionButton.Parent = MainFrame
+    NoCollisionButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    NoCollisionButton.Position = UDim2.new(0.1, 0, 0.65, 0)
+    NoCollisionButton.Size = UDim2.new(0.8, 0, 0, 30)
+    NoCollisionButton.Font = Enum.Font.GothamBold
+    NoCollisionButton.Text = "NO COLLISION: OFF"
+    NoCollisionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    NoCollisionButton.TextSize = 14.000
+    
     FOVSlider.Name = "FOVSlider"
     FOVSlider.Parent = MainFrame
     FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    FOVSlider.Position = UDim2.new(0.1, 0, 0.65, 0)
+    FOVSlider.Position = UDim2.new(0.1, 0, 0.8, 0)
     FOVSlider.Size = UDim2.new(0.8, 0, 0, 5)
     
     SliderButton.Name = "SliderButton"
@@ -204,7 +216,7 @@ function AimbotGui.Show()
     SensitivitySlider.Name = "SensitivitySlider"
     SensitivitySlider.Parent = MainFrame
     SensitivitySlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    SensitivitySlider.Position = UDim2.new(0.1, 0, 0.8, 0)
+    SensitivitySlider.Position = UDim2.new(0.1, 0, 0.9, 0)
     SensitivitySlider.Size = UDim2.new(0.8, 0, 0, 5)
     
     SensSliderButton.Name = "SensSliderButton"
@@ -227,7 +239,7 @@ function AimbotGui.Show()
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
     CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
-    CloseButton.Position = UDim2.new(0.1, 0, 0.9, 0)
+    CloseButton.Position = UDim2.new(0.1, 0, 0.95, 0)
     CloseButton.Size = UDim2.new(0.8, 0, 0, 20)
     CloseButton.Font = Enum.Font.GothamBold
     CloseButton.Text = "CLOSE"
@@ -245,6 +257,7 @@ function AimbotGui.Show()
     addCorner(ToggleButton)
     addCorner(TeamCheckButton)
     addCorner(WallCheckButton)
+    addCorner(NoCollisionButton)
     addCorner(FOVSlider)
     addCorner(SliderButton)
     addCorner(SensitivitySlider)
@@ -308,6 +321,62 @@ function AimbotGui.Show()
         WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     end)
     
+    -- 添加无碰撞按钮功能
+    NoCollisionButton.MouseButton1Down:Connect(function()
+        Environment.Settings.NoCollision = not Environment.Settings.NoCollision
+        NoCollisionButton.Text = "NO COLLISION: " .. (Environment.Settings.NoCollision and "ON" or "OFF")
+        NoCollisionButton.BackgroundColor3 = Environment.Settings.NoCollision and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        
+        -- 处理无碰撞逻辑
+        local function updateCollision()
+            if not Environment.Settings.NoCollision then return end
+            
+            local localPlayer = game:GetService("Players").LocalPlayer
+            if not localPlayer or not localPlayer.Character then return end
+            
+            for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                if player ~= localPlayer and player.Character then
+                    for _, part in pairs(player.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- 如果开启无碰撞
+        if Environment.Settings.NoCollision then
+            -- 初始更新
+            updateCollision()
+            
+            -- 添加心跳更新
+            if not Environment.NoCollisionConnection then
+                Environment.NoCollisionConnection = game:GetService("RunService").Heartbeat:Connect(updateCollision)
+            end
+        else
+            -- 关闭时断开连接
+            if Environment.NoCollisionConnection then
+                Environment.NoCollisionConnection:Disconnect()
+                Environment.NoCollisionConnection = nil
+            end
+            
+            -- 恢复碰撞
+            local localPlayer = game:GetService("Players").LocalPlayer
+            if localPlayer and localPlayer.Character then
+                for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                    if player ~= localPlayer and player.Character then
+                        for _, part in pairs(player.Character:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+    
     -- FOV滑块功能
     local function updateFOV(input)
         local sliderPosition = math.clamp((input.Position.X - FOVSlider.AbsolutePosition.X) / FOVSlider.AbsoluteSize.X, 0, 1)
@@ -365,6 +434,7 @@ function AimbotGui.Show()
     ToggleButton.BackgroundColor3 = Environment.Settings.Enabled and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     TeamCheckButton.BackgroundColor3 = Environment.Settings.TeamCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    NoCollisionButton.BackgroundColor3 = Environment.Settings.NoCollision and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     
     -- 初始化滑块位置
     SliderButton.Position = UDim2.new(Environment.FOVSettings.Amount / 180, -5, -1, 0)
@@ -543,7 +613,8 @@ function Environment.Functions:ResetSettings()
 		ThirdPersonSensitivity = 3, -- Boundary: 0.1 - 5
 		TriggerKey = "MouseButton2",
 		Toggle = false,
-		LockPart = "Head" -- Body part to lock on
+		LockPart = "Head", -- Body part to lock on
+		NoCollision = false -- 添加无碰撞设置
 	}
 
 	Environment.FOVSettings = {
