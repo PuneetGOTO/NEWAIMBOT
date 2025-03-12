@@ -7,7 +7,7 @@ local function createKeySystem()
     -- 创建GUI元素
     local ScreenGui = Instance.new("ScreenGui")
     local MainFrame = Instance.new("Frame")
-    local Title = Instance.new("ImageLabel")  -- 改为ImageLabel用于显示HOHO标题
+    local Title = Instance.new("TextLabel")  -- 改为TextLabel显示PUPUHUB
     local KeyInput = Instance.new("TextBox")
     local GetKeyButton1 = Instance.new("TextButton")
     local GetKeyButton2 = Instance.new("TextButton")
@@ -33,7 +33,10 @@ local function createKeySystem()
     Title.BackgroundTransparency = 1
     Title.Position = UDim2.new(0.5, -75, 0.05, 0)
     Title.Size = UDim2.new(0, 150, 0, 50)
-    Title.Image = "rbxassetid://YOUR_HOHO_LOGO_ID"  -- 需要替换为实际的HOHO logo图片ID
+    Title.Font = Enum.Font.GothamBold
+    Title.Text = "PUPUHUB"
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 28.000
     
     KeyInput.Name = "KeyInput"
     KeyInput.Parent = MainFrame
