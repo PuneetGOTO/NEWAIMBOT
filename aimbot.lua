@@ -122,6 +122,7 @@ function AimbotGui.Show()
     local WallCheckButton = Instance.new("TextButton")
     local NoCollisionButton = Instance.new("TextButton")
     local AntiAFKButton = Instance.new("TextButton")
+    local TeleportButton = Instance.new("TextButton") -- 新增传送按钮
     local FOVSlider = Instance.new("Frame")
     local SliderButton = Instance.new("TextButton")
     local FOVValue = Instance.new("TextLabel")
@@ -202,10 +203,21 @@ function AimbotGui.Show()
     AntiAFKButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     AntiAFKButton.TextSize = 14.000
     
+    -- 添加传送按钮
+    TeleportButton.Name = "TeleportButton"
+    TeleportButton.Parent = MainFrame
+    TeleportButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
+    TeleportButton.Position = UDim2.new(0.1, 0, 0.85, 0)
+    TeleportButton.Size = UDim2.new(0.8, 0, 0, 30)
+    TeleportButton.Font = Enum.Font.GothamBold
+    TeleportButton.Text = "TELEPORT: OFF"
+    TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TeleportButton.TextSize = 14.000
+    
     FOVSlider.Name = "FOVSlider"
     FOVSlider.Parent = MainFrame
     FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    FOVSlider.Position = UDim2.new(0.1, 0, 0.85, 0)
+    FOVSlider.Position = UDim2.new(0.1, 0, 0.9, 0)
     FOVSlider.Size = UDim2.new(0.8, 0, 0, 5)
     
     SliderButton.Name = "SliderButton"
@@ -228,7 +240,7 @@ function AimbotGui.Show()
     SensitivitySlider.Name = "SensitivitySlider"
     SensitivitySlider.Parent = MainFrame
     SensitivitySlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    SensitivitySlider.Position = UDim2.new(0.1, 0, 0.9, 0)
+    SensitivitySlider.Position = UDim2.new(0.1, 0, 0.95, 0)
     SensitivitySlider.Size = UDim2.new(0.8, 0, 0, 5)
     
     SensSliderButton.Name = "SensSliderButton"
@@ -251,7 +263,7 @@ function AimbotGui.Show()
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = MainFrame
     CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 30)
-    CloseButton.Position = UDim2.new(0.1, 0, 0.95, 0)
+    CloseButton.Position = UDim2.new(0.1, 0, 0.99, 0)
     CloseButton.Size = UDim2.new(0.8, 0, 0, 20)
     CloseButton.Font = Enum.Font.GothamBold
     CloseButton.Text = "CLOSE"
@@ -271,6 +283,7 @@ function AimbotGui.Show()
     addCorner(WallCheckButton)
     addCorner(NoCollisionButton)
     addCorner(AntiAFKButton)
+    addCorner(TeleportButton)
     addCorner(FOVSlider)
     addCorner(SliderButton)
     addCorner(SensitivitySlider)
@@ -420,6 +433,20 @@ function AimbotGui.Show()
         end
     end)
     
+    -- 传送按钮点击事件
+    TeleportButton.MouseButton1Down:Connect(function()
+        _G.WRDClickTeleport = not _G.WRDClickTeleport
+        TeleportButton.Text = "TELEPORT: " .. (_G.WRDClickTeleport and "ON" or "OFF")
+        TeleportButton.BackgroundColor3 = _G.WRDClickTeleport and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+        
+        -- 显示通知
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "PUPUHUB",
+            Text = "Click teleport " .. (_G.WRDClickTeleport and "enabled" or "disabled"),
+            Duration = 5
+        })
+    end)
+    
     -- FOV滑块功能
     local function updateFOV(input)
         local sliderPosition = math.clamp((input.Position.X - FOVSlider.AbsolutePosition.X) / FOVSlider.AbsoluteSize.X, 0, 1)
@@ -479,6 +506,7 @@ function AimbotGui.Show()
     WallCheckButton.BackgroundColor3 = Environment.Settings.WallCheck and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     NoCollisionButton.BackgroundColor3 = Environment.Settings.NoCollision and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     AntiAFKButton.BackgroundColor3 = Environment.Settings.AntiAFK and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
+    TeleportButton.BackgroundColor3 = _G.WRDClickTeleport and Color3.fromRGB(0, 180, 30) or Color3.fromRGB(180, 0, 30)
     
     -- 初始化滑块位置
     SliderButton.Position = UDim2.new(Environment.FOVSettings.Amount / 180, -5, -1, 0)
@@ -621,6 +649,27 @@ local function Load()
 	end)
 end
 
+--// Click Teleport Feature
+if _G.WRDClickTeleport == nil then
+    _G.WRDClickTeleport = false
+    
+    local player = game:GetService("Players").LocalPlayer
+    local UserInputService = game:GetService("UserInputService")
+    local mouse = player:GetMouse()
+
+    --Waits until the player's mouse is found
+    repeat wait() until mouse
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            --Only click teleport if the toggle is enabled
+            if _G.WRDClickTeleport and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                player.Character:MoveTo(Vector3.new(mouse.Hit.x, mouse.Hit.y, mouse.Hit.z)) 
+            end
+        end
+    end)
+end
+
 --// Functions
 
 Environment.Functions = {}
@@ -689,3 +738,6 @@ pcall(function()
     end
     AimbotGui.Show()
 end)
+
+--// Return Environment
+return Environment
