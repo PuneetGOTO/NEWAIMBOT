@@ -57,60 +57,6 @@ Environment.FOVSettings = {
 Environment.FOVCircle = Drawing.new("Circle")
 
 --// GUI Creation
-local function CreateReopenButton()
-    -- 如果已存在则先移除
-    if game:GetService("CoreGui"):FindFirstChild("ReopenGUI") then
-        game:GetService("CoreGui"):FindFirstChild("ReopenGUI"):Destroy()
-    end
-
-    local ScreenGui = Instance.new("ScreenGui")
-    local ReopenButton = Instance.new("TextButton")
-    
-    ScreenGui.Name = "ReopenGUI"
-    ScreenGui.Parent = game:GetService("CoreGui")
-    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.DisplayOrder = 999999
-    
-    ReopenButton.Name = "ReopenButton"
-    ReopenButton.Parent = ScreenGui
-    ReopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    ReopenButton.BackgroundTransparency = 1
-    ReopenButton.Position = UDim2.new(0, 10, 0.4, 0)
-    ReopenButton.Size = UDim2.new(0, 50, 0, 50)
-    ReopenButton.Font = Enum.Font.GothamBold
-    ReopenButton.Text = "神"
-    ReopenButton.TextColor3 = Color3.fromRGB(255, 192, 203) -- 粉色
-    ReopenButton.TextSize = 35.000
-    ReopenButton.TextStrokeColor3 = Color3.fromRGB(255, 182, 193) -- 浅粉色描边
-    ReopenButton.TextStrokeTransparency = 0.5
-    ReopenButton.Active = true
-    ReopenButton.AutoButtonColor = false
-    
-    -- 添加点击事件
-    ReopenButton.MouseButton1Click:Connect(function()
-        if not game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
-            ScreenGui:Destroy()
-            task.wait()
-            CreateAimbotGUI()
-        end
-    end)
-    
-    -- 添加悬停效果
-    ReopenButton.MouseEnter:Connect(function()
-        game:GetService("TweenService"):Create(ReopenButton, TweenInfo.new(0.3), {
-            TextSize = 40.000,
-            TextTransparency = 0.2
-        }):Play()
-    end)
-    
-    ReopenButton.MouseLeave:Connect(function()
-        game:GetService("TweenService"):Create(ReopenButton, TweenInfo.new(0.3), {
-            TextSize = 35.000,
-            TextTransparency = 0
-        }):Play()
-    end)
-end
-
 local function CreateAimbotGUI()
     -- 如果已存在则先移除
     if game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
@@ -379,12 +325,76 @@ local function CreateAimbotGUI()
     SensSliderButton.Position = UDim2.new(Environment.Settings.Sensitivity / 1, -5, -1, 0)
 end
 
--- 创建GUI
-if not game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
-    CreateAimbotGUI()
-else
-    CreateReopenButton()
+local function CreateReopenButton()
+    -- 如果已存在则先移除
+    if game:GetService("CoreGui"):FindFirstChild("ReopenGUI") then
+        game:GetService("CoreGui"):FindFirstChild("ReopenGUI"):Destroy()
+    end
+
+    local ScreenGui = Instance.new("ScreenGui")
+    local ReopenButton = Instance.new("TextButton")
+    
+    ScreenGui.Name = "ReopenGUI"
+    ScreenGui.Parent = game:GetService("CoreGui")
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.DisplayOrder = 999999
+    
+    ReopenButton.Name = "ReopenButton"
+    ReopenButton.Parent = ScreenGui
+    ReopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ReopenButton.BackgroundTransparency = 1
+    ReopenButton.Position = UDim2.new(0, 10, 0.4, 0)
+    ReopenButton.Size = UDim2.new(0, 50, 0, 50)
+    ReopenButton.Font = Enum.Font.GothamBold
+    ReopenButton.Text = "神"
+    ReopenButton.TextColor3 = Color3.fromRGB(255, 192, 203) -- 粉色
+    ReopenButton.TextSize = 35.000
+    ReopenButton.TextStrokeColor3 = Color3.fromRGB(255, 182, 193) -- 浅粉色描边
+    ReopenButton.TextStrokeTransparency = 0.5
+    ReopenButton.Active = true
+    ReopenButton.AutoButtonColor = false
+    ReopenButton.Modal = true
+    
+    -- 添加点击事件
+    local debounce = false
+    ReopenButton.MouseButton1Click:Connect(function()
+        if debounce then return end
+        debounce = true
+        
+        ScreenGui:Destroy()
+        task.wait(0.1)
+        CreateAimbotGUI()
+        
+        task.wait(0.5)
+        debounce = false
+    end)
+    
+    -- 添加悬停效果
+    ReopenButton.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(ReopenButton, TweenInfo.new(0.3), {
+            TextSize = 40.000,
+            TextTransparency = 0.2
+        }):Play()
+    end)
+    
+    ReopenButton.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(ReopenButton, TweenInfo.new(0.3), {
+            TextSize = 35.000,
+            TextTransparency = 0
+        }):Play()
+    end)
 end
+
+-- 初始化界面
+pcall(function()
+    if game:GetService("CoreGui"):FindFirstChild("AimbotGUI") then
+        game:GetService("CoreGui"):FindFirstChild("AimbotGUI"):Destroy()
+    end
+    if game:GetService("CoreGui"):FindFirstChild("ReopenGUI") then
+        game:GetService("CoreGui"):FindFirstChild("ReopenGUI"):Destroy()
+    end
+    CreateAimbotGUI()
+end)
 
 --// Functions
 
