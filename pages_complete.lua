@@ -16,7 +16,13 @@ return function(MainFrame, MainContent, HomeButton, PagesButton, createFeatureBu
         {name = "TELEPORT", desc = "Quick teleport to\nany location", pos = UDim2.new(0, 0, 0, 90)},
         {name = "RAID", desc = "Join and auto\nraid features", pos = UDim2.new(0.52, 0, 0, 90)},
         {name = "PVP", desc = "Enhanced PVP\ncombat features", pos = UDim2.new(0, 0, 0, 180)},
-        {name = "MISC", desc = "Additional utility\nfeatures", pos = UDim2.new(0.52, 0, 0, 180)}
+        {name = "MISC", desc = "Additional utility\nfeatures", pos = UDim2.new(0.52, 0, 0, 180)},
+        {name = "TEAM CHECK", desc = "Check team status", pos = UDim2.new(0, 0, 0, 270)},
+        {name = "WALL CHECK", desc = "Check wall status", pos = UDim2.new(0.52, 0, 0, 270)},
+        {name = "THIRD PERSON", desc = "Toggle third person view", pos = UDim2.new(0, 0, 0, 360)},
+        {name = "TOGGLE", desc = "Toggle feature", pos = UDim2.new(0.52, 0, 0, 360)},
+        {name = "FOV", desc = "Adjust field of view", pos = UDim2.new(0, 0, 0, 450)},
+        {name = "SENSITIVITY", desc = "Adjust sensitivity", pos = UDim2.new(0.52, 0, 0, 450)},
     }
 
     -- 创建所有功能按钮
